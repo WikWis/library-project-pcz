@@ -1,0 +1,132 @@
+# Build output
+
+**/bin/
+**/obj/
+
+
+
+# Visual Studio
+
+.vs/
+**/.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+
+
+# Rider
+
+.idea/
+**/.idea/
+*.sln.iml
+*.DotSettings.user
+
+
+
+# VSCode
+
+.vscode/
+
+
+
+# NuGet
+
+*.nupkg
+*.snupkg
+packages/
+**/packages/
+*.nuget.props
+*.nuget.targets
+
+
+
+# ASP.NET
+
+**/Properties/ServiceDependencies/
+**/Properties/PublishProfiles/
+**/TestResults/
+**/BenchmarkDotNet.Artifacts/
+
+
+
+# Node.js, npm, Astro
+
+node_modules/
+**/node_modules/
+.astro/
+**/.astro/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.yarn/
+.pnpm-store/
+dist/
+**/dist/
+
+
+
+# Environment / secrets
+
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+
+
+# OS
+
+Thumbs.db
+Desktop.ini
+.DS_Store
+.AppleDouble
+.LSOverride
+
+
+
+# Logs
+
+*.log
+logs/
+**/logs/
+
+
+
+# Temporary files
+
+*.tmp
+*.temp
+*.cache
+
+
+
+# Coverage
+
+coverage/
+**/coverage/
+*.coverage
+*.coveragexml
+
+
+
+# Database / local development files
+
+*.db
+*.db-shm
+*.db-wal
+
+
+
+# Generated files
+
+*.pdb
+*.cache
+*.ncrunch*
+*.bak
+*.orig
+*.rej
