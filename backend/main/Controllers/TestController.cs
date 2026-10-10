@@ -7,13 +7,13 @@ namespace main.Controllers;
 public class TestController : ControllerBase
 {
     [HttpGet]
-    public Dictionary<String, String> Get()
+    public Dictionary<string, string> Get()
     {
         return new Dictionary<string, string>
         {
             { "Edyta Jarząbek", "Sher" },
             { "Jakub Siwek", "polpop" },
-            { "Wiktor Wiśniewski", "WikWis" },
+            { "Wiktor Wiśniewski", "WikWis" }
         };
     }
 }
