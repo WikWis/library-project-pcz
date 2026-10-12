@@ -1,13 +1,50 @@
+---
+import "bootstrap/dist/css/bootstrap.min.css";
+import Footer from "../components/footer/Footer.astro";
+import Menu from "../components/menu/Menu.astro";
+import MenuBrand from "../components/menu/MenuBrand.astro";
+import MenuItem from "../components/menu/MenuItem.astro";
+import MenuSearch from "../components/menu/MenuSearch.astro";
+---
 <!doctype html>
 <html lang="pl">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<title>Base</title>
-	</head>
-	<body>
-		<slot />
-	</body>
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width"/>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg"/>
+    <link rel="icon" href="/favicon.ico"/>
+    <title>Biblioteka</title>
+</head>
+<body>
+
+<div class="d-flex flex-column min-vh-100">
+
+    <div class="row flex-grow-1">
+
+        <div class="col-md-3 p-3">
+            <Menu>
+                <MenuBrand/>
+                <MenuItem href="/">Strona główna</MenuItem>
+                <MenuItem href="/o-nas">O nas</MenuItem>
+                <MenuItem href="/kontakt">Kontakt</MenuItem>
+                <MenuSearch/>
+            </Menu>
+        </div>
+
+
+        <main class="col-md-9 p-4">
+            <slot/>
+        </main>
+
+    </div>
+
+    <Footer message="Projekt zespołowy z Inżynierii Oprogramowania"/>
+
+
+</div>
+
+</body>
+<script>
+    import 'bootstrap/dist/js/bootstrap.bundle.min.js'
+</script>
 </html>

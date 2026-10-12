@@ -1,0 +1,14 @@
+---
+interface Props {
+    message: string
+}
+
+const {
+    message,
+} = Astro.props
+
+const date: Date = new Date(Date.now());
+---
+<footer class="bg-dark text-white text-center p-3">
+    <p class="mb-0">© {date.getFullYear()} {message}</p>
+</footer>
