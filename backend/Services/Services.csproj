@@ -16,4 +16,19 @@
     <ProjectReference Include="..\Model\Model.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Service\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="obj\project.assets.json" />
+    <Content Include="obj\project.nuget.cache" />
+    <Content Include="obj\project.packagespec.json" />
+    <Content Include="obj\rider.project.model.nuget.info" />
+    <Content Include="obj\rider.project.restore.info" />
+    <Content Include="obj\Services.csproj.nuget.dgspec.json" />
+    <Content Include="obj\Services.csproj.nuget.g.props" />
+    <Content Include="obj\Services.csproj.nuget.g.targets" />
+  </ItemGroup>
+
 </Project>

@@ -1,7 +1,11 @@
+using System.Reflection;
+using AutoMapper;
 using DAL;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Model;
+using Services.Interfaces;
+using Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,19 +36,23 @@ builder.Services.ConfigureApplicationCookie(options =>
 */
 
 //AutoMapery np.
-//builder.Services.AddAutoMapper(cfg => cfg.AddProfile<backend.Services.Mapping.AuthorProfile>());
+builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly,  typeof(BaseService).Assembly);
 
 builder.Services.AddControllers();
 builder.Services.AddAuthentication(/* Konfiguracja JWT pod frontend */);
 builder.Services.AddAuthorization();
 
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+
 var app = builder.Build();
 
 // Tutaj seedery np.
-/*
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
+    var mapper = services.GetRequiredService<IMapper>();
+    mapper.ConfigurationProvider.AssertConfigurationIsValid();
+    /*
     try
     {
         var context = services.GetRequiredService<MyDbContext>();
@@ -55,8 +63,8 @@ using (var scope = app.Services.CreateScope())
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Błąd inicjalizacji ról i danych testowych.");
     }
+    */
 }
-*/
 
 app.UseHttpsRedirection();
 

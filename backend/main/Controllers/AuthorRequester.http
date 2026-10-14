@@ -1,0 +1,34 @@
+###
+GET http://localhost:5111/api/authors
+###
+GET http://localhost:5111/api/authors?pageSize=2
+###
+GET http://localhost:5111/api/authors?pageSize=2&page=0
+###
+GET http://localhost:5111/api/authors?pageSize=2&page=1
+
+###
+GET http://localhost:5111/api/authors/1
+
+###
+POST http://localhost:5111/api/authors
+###
+POST http://localhost:5111/api/authors
+Content-Type: application/json
+
+{
+    "Name":"Jake",
+    "Surname":"Writer"
+}
+
+###
+PUT http://localhost:5111/api/authors/1003
+Content-Type: application/json
+
+{
+  "Name":"John",
+  "Surname":"Wrighter"
+}
+
+###
+DELETE http://localhost:5111/api/authors/1004
