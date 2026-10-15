@@ -1,4 +1,3 @@
-using System.Reflection;
 using AutoMapper;
 using DAL;
 using Microsoft.AspNetCore.Identity;
@@ -43,6 +42,7 @@ builder.Services.AddAuthentication(/* Konfiguracja JWT pod frontend */);
 builder.Services.AddAuthorization();
 
 builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
 
 var app = builder.Build();
 

@@ -5,7 +5,7 @@ namespace services.DTOs.TitleDTOs;
 
 public class TitleDTO
 {
-    public int Id { get; set; }
+    public int TitleId { get; set; }
     public string Name { get; set; } = string.Empty;
     public DateOnly DateOfPublishing { get; set; }
 

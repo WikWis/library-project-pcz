@@ -14,7 +14,5 @@ public class AuthorProfile : Profile
         CreateMap<CreateAuthorDTO, Author>()
             .ForMember(d=>d.AuthorId, o=>o.Ignore())
             .ForMember(d=>d.Titles, o=>o.Ignore());
-        CreateMap<UpdateAuthorDTO, Author>()
-            .ForMember(d=>d.Titles, o=>o.Ignore());
     }
 }

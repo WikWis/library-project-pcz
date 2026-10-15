@@ -12,9 +12,9 @@ public class AuthorService : BaseService, IAuthorService
     {
     }
 
-    public AuthorDTO? GetAuthor(int id)
+    public AuthorDTO? GetAuthor(int publisherId)
     {
-        var author = _dbContext.Authors.Find(id);
+        var author = _dbContext.Authors.Find(publisherId);
         return _mapper.Map<AuthorDTO>(author);
     }
 
@@ -35,28 +35,28 @@ public class AuthorService : BaseService, IAuthorService
         throw new NotImplementedException();
     }
 
-    public int AddAuthor(CreateAuthorDTO dto)
+    public int AddAuthor(CreateAuthorDTO createAuthorDto)
     {
-        var author = _mapper.Map<Author>(dto);
+        var author = _mapper.Map<Author>(createAuthorDto);
         _dbContext.Authors.Add(author);
         _dbContext.SaveChanges();
         return author.AuthorId;
     }
 
-    public bool UpdateAuthor(UpdateAuthorDTO dto)
+    public bool UpdateAuthor(UpdateAuthorDTO updateAuthorDto)
     {
-        var author = _dbContext.Authors.FirstOrDefault(a => a.AuthorId == dto.AuthorId);
+        var author = _dbContext.Authors.FirstOrDefault(a => a.AuthorId == updateAuthorDto.AuthorId);
         if (author == null) return false;
 
-        author.Name = dto.Name;
-        author.Surname = dto.Surname;
+        author.Name = updateAuthorDto.Name;
+        author.Surname = updateAuthorDto.Surname;
         _dbContext.SaveChanges();
         return true;
     }
 
-    public bool DeleteAuthor(int id)
+    public bool DeleteAuthor(int authorId)
     {
-        var author = _dbContext.Authors.Find(id);
+        var author = _dbContext.Authors.Find(authorId);
         if (author == null) return false;
 
         _dbContext.Authors.Remove(author);

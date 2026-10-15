@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Service\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="obj\project.assets.json" />
     <Content Include="obj\project.nuget.cache" />
     <Content Include="obj\project.packagespec.json" />

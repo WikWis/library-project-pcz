@@ -1,0 +1,27 @@
+###
+GET http://localhost:5111/api/publishers
+
+###
+GET http://localhost:5111/api/publishers?pageSize=2&page=1
+
+###
+GET http://localhost:5111/api/publishers/1
+
+###
+POST http://localhost:5111/api/publishers
+Content-Type: application/json
+
+{
+  "Name":"Publix"
+}
+
+###
+PUT http://localhost:5111/api/publishers/2
+Content-Type: application/json
+
+{
+  "Name":"Publik"
+}
+
+###
+DELETE http://localhost:5111/api/publishers/1

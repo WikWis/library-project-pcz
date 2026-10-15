@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:5111/api/authors/1003
+PUT http://localhost:5111/api/authors/1
 Content-Type: application/json
 
 {

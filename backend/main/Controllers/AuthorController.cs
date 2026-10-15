@@ -18,10 +18,10 @@ public class AuthorController : Controller
     [HttpGet]
     public IActionResult Index([FromQuery] int? titleId, [FromQuery] int page = 0, [FromQuery] int pageSize = 20)
     {
-        var authors = titleId == null
+        var authorLookupDtos = titleId == null
             ? authorService.GetAuthors(page, pageSize)
             : authorService.GetAuthorsByTitle(page, pageSize, (int)titleId);
-        return Ok(authors);
+        return Ok(authorLookupDtos);
     }
 
     [HttpGet("{authorId:int}")]
@@ -32,30 +32,30 @@ public class AuthorController : Controller
     }
     
     [HttpPost]
-    public IActionResult Create([FromBody] CreateAuthorDTO? authorDto)
+    public IActionResult Create([FromBody] CreateAuthorDTO? createAuthorDto)
     {
-        if (authorDto == null) return BadRequest();
-        var id = authorService.AddAuthor(authorDto);
+        if (createAuthorDto == null) return BadRequest();
+        var id = authorService.AddAuthor(createAuthorDto);
         var author = authorService.GetAuthor(id);
         return Created("/api/authors/" + id, author);
     }
 
     [HttpPut("{authorId:int?}")]
-    public IActionResult Update(int? authorId, [FromBody] CreateAuthorDTO? authorDto)
+    public IActionResult Update(int? authorId, [FromBody] CreateAuthorDTO? updateAuthorDto)
     {
-        if (authorId == null || authorDto == null) return BadRequest();
+        if (authorId == null || updateAuthorDto == null) return BadRequest();
         var updateDto = new UpdateAuthorDTO()
         {
             AuthorId = (int)authorId,
-            Name = authorDto.Name,
-            Surname = authorDto.Surname
+            Name = updateAuthorDto.Name,
+            Surname = updateAuthorDto.Surname
         };
         var result = authorService.UpdateAuthor(updateDto); 
-        return result ? NoContent() : NotFound();
+        return result ? Ok(authorService.GetAuthor((int)authorId)) : NotFound();
     }
     
     [HttpDelete("{authorId:int?}")]
-    public IActionResult Update(int? authorId)
+    public IActionResult Delete(int? authorId)
     {
         if (authorId == null) return BadRequest();
         var result = authorService.DeleteAuthor((int)authorId); 
