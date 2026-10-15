@@ -1,4 +1,4 @@
-using services.DTOs.TitleDTOs;
+using Services.DTOs.TitleDTOs;
 
 namespace services.DTOs.PublisherDTOs;
 
