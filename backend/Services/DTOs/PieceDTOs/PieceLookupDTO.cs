@@ -1,10 +1,11 @@
 using Model;
 
-namespace services.DTOs.PieceDTOs;
+namespace Services.DTOs.PieceDTOs;
 
 public class PieceLookupDTO
 {
-    public int Id { get; set; }
-    public PieceStatus Status { get; set; } = PieceStatus.Free;
-    public PieceState State { get; set; } = PieceState.Good;
+    public int PieceId { get; set; }
+    public int TitleId { get; set; }
+    public PieceStatus Status { get; set; }
+    public PieceState State { get; set; }
 }

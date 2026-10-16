@@ -24,7 +24,12 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<MyDbContext>()
 .AddDefaultTokenProviders();
 
-//Tutaj rejestracja serwisów np. builder.Services.AddScoped<IJakisService, JakisService>();
+//Tutaj rejestracja serwisów
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IPieceService, PieceService>();
+builder.Services.AddScoped<IPublisherService, PublisherService>();
+builder.Services.AddScoped<ITitleService, TitleService>();
+
 
 /* Jeśli frontend i backend na innym localhoscie, to odkomentować.
 builder.Services.ConfigureApplicationCookie(options =>
@@ -40,9 +45,6 @@ builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly,  typeof(BaseS
 builder.Services.AddControllers();
 builder.Services.AddAuthentication(/* Konfiguracja JWT pod frontend */);
 builder.Services.AddAuthorization();
-
-builder.Services.AddScoped<IAuthorService, AuthorService>();
-builder.Services.AddScoped<IPublisherService, PublisherService>();
 
 var app = builder.Build();
 
