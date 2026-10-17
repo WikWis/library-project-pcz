@@ -1,0 +1,53 @@
+﻿### Pobierz wszystkie egzemplarze
+GET http://localhost:5111/api/pieces
+
+### Pobranie z limitem na stronę
+GET http://localhost:5111/api/pieces?pageSize=2
+
+### Pobranie pierwszej strony
+GET http://localhost:5111/api/pieces?pageSize=2&page=0
+
+### Pobranie drugiej strony
+GET http://localhost:5111/api/pieces?pageSize=2&page=1
+
+### Pobierz egzemplarze przypisane do danego tytułu
+GET http://localhost:5111/api/pieces?titleId=1
+
+### Pobierz egzemplarze dla tytułu z limitem na stronę
+GET http://localhost:5111/api/pieces?titleId=1&pageSize=2&page=0
+
+### Pobierz szczegóły egzemplarza po ID
+GET http://localhost:5111/api/pieces/1
+
+### Dodaj egzemplarz - test  400 BadRequest
+POST http://localhost:5111/api/pieces?titleId=1
+
+### Dodaj nowy egzemplarz dla tytułu (titleId = 1)
+POST http://localhost:5111/api/pieces?titleId=1
+Content-Type: application/json
+
+{
+  "status": 0,
+  "state": 0
+}
+
+### Dodaj nowy egzemplarz z nazwami enumów
+POST http://localhost:5111/api/pieces?titleId=1
+Content-Type: application/json
+
+{
+  "status": "Free",
+  "state": "Good"
+}
+
+### Zaktualizuj egzemplarz
+PUT http://localhost:5111/api/pieces/1
+Content-Type: application/json
+
+{
+  "status": "Borrowed",
+  "state": "Damaged"
+}
+
+### Usuń egzemplarz
+DELETE http://localhost:5111/api/pieces/1
