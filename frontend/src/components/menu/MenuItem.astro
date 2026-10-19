@@ -1,0 +1,14 @@
+---
+interface Props {
+    href: string
+}
+
+const {
+    href,
+} = Astro.props
+---
+<li class="list-group-item">
+    <a href={href} class="nav-link text-black">
+        <slot/>
+    </a>
+</li>
