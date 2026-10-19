@@ -1,0 +1,68 @@
+﻿### Pobranie wszystkich tytułów
+GET http://localhost:5111/api/titles
+
+### Pobranie z limitem na stronę
+GET http://localhost:5111/api/titles?pageSize=2
+
+### Pobranie pierwszej strony
+GET http://localhost:5111/api/titles?pageSize=2&page=0
+
+### Pobranie drugiej strony
+GET http://localhost:5111/api/titles?pageSize=2&page=1
+
+### Pobranie tytułów przypisanych do konkretnego autora
+GET http://localhost:5111/api/titles?authorId=1&pageSize=5&page=0
+
+### Pobranie szczegółów pojedynczego tytułu po ID
+GET http://localhost:5111/api/titles/1
+
+### Błędne utworzenie (puste żądaniet)
+POST http://localhost:5111/api/titles
+
+### Utworzenie nowego tytułu
+POST http://localhost:5111/api/titles
+Content-Type: application/json
+
+{
+  "name": "Wiedźmin: Ostatnie życzenie",
+  "dateOfPublishing": "1993-01-01",
+  "isbn": 9788375780635,
+  "genres": [
+    "Fantasy",
+    "Przygoda"
+  ],
+  "authors": [
+    {
+      "authorId": 1
+    }
+  ],
+  "publisher": {
+    "publisherId": 1
+  }
+}
+
+### Aktualizacja istniejącego tytułu
+PUT http://localhost:5111/api/titles/1
+Content-Type: application/json
+
+{
+  "name": "Wiedźmin: Ostatnie życzenie (Edycja Rozszerzona)",
+  "dateOfPublishing": "1993-01-01",
+  "isbn": 9788375780635,
+  "genres": [
+    "Fantasy",
+    "Przygoda",
+    "Bestseller"
+  ],
+  "authors": [
+    {
+      "authorId": 1
+    }
+  ],
+  "publisher": {
+    "publisherId": 1
+  }
+}
+
+### Usunięcie tytułu po ID
+DELETE http://localhost:5111/api/titles/1
