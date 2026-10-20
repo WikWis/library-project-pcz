@@ -12,5 +12,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
     let authorService: AuthorService = new AuthorService();
 
+    // For testing delete in future
     console.log(await authorService.Index())
+    console.log(await authorService.Index(undefined, 3, 1))
+    console.log(await authorService.Details(3123123121))
+    console.log(await authorService.Create({Name: "dasdas", Surname: "dasdasdas"}))
+    console.log(await authorService.Update(1, {AuthorId: 1, Name: "dasdas", Surname: "dasdasdas"}))
+    console.log(await authorService.Delete(2034));
 </script>
