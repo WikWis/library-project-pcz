@@ -7,16 +7,76 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     <p>Witaj na stronie głównej biblioteki!</p>
 </BaseLayout>
 
+<!--// For testing delete in future-->
 <script>
     import {AuthorService} from "../services/author-service.ts";
+    import {TitleService} from "../services/title-service.ts";
 
+
+    // Author Service
     let authorService: AuthorService = new AuthorService();
 
-    // For testing delete in future
     console.log(await authorService.Index())
     console.log(await authorService.Index(undefined, 3, 1))
     console.log(await authorService.Details(3123123121))
-    console.log(await authorService.Create({Name: "dasdas", Surname: "dasdasdas"}))
-    console.log(await authorService.Update(1, {AuthorId: 1, Name: "dasdas", Surname: "dasdasdas"}))
+    console.log(await authorService.Create(
+        {
+            Name: "dasdas",
+            Surname: "dasdasdas",
+        }
+    ))
+    console.log(await authorService.Update(1,
+        {
+            AuthorId: 1,
+            Name: "dasdas",
+            Surname: "dasdasdas",
+        }
+    ))
     console.log(await authorService.Delete(2034));
+
+
+    // Title Service
+    let titleService: TitleService = new TitleService();
+
+    console.log(await titleService.Index())
+    console.log(await titleService.Index(undefined, 3, 1))
+    console.log(await titleService.Details(3123123121))
+    console.log(await titleService.Create({
+        Name: 'Wiedźmin: Ostatnie życzenie',
+        DateOfPublishing: '1993-11-01',
+        ISBN: 9788375780635,
+        Genres: ['Fantasy', 'Adventure'],
+        Authors: [
+            {
+                AuthorId: 1,
+                Name: 'Andrzej',
+                Surname: 'Sapkowski',
+            },
+        ],
+        Publisher: {
+            PublisherId: 2,
+            Name: 'superNOWA',
+        },
+    }))
+    console.log(await titleService.Update(1, {
+        TitleId: 1,
+        Name: 'Wiedźmin: Ostatnie życzenie',
+        DateOfPublishing: '1993-11-01',
+        ISBN: 9788375780635,
+        Genres: ['Fantasy', 'Adventure'],
+        Authors: [
+            {
+                AuthorId: 1,
+                Name: 'Andrzej',
+                Surname: 'Sapkowski',
+            },
+        ],
+        Publisher: {
+            PublisherId: 1,
+            Name: 'superNOWA',
+        },
+    }))
+    console.log(await titleService.Delete(1042));
+
+
 </script>
