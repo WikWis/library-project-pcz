@@ -6,3 +6,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
     <p>Witaj na stronie głównej biblioteki!</p>
 </BaseLayout>
+
+<script>
+    import {AuthorService} from "../services/author-service.ts";
+
+    let authorService: AuthorService = new AuthorService();
+
+    console.log(await authorService.Index())
+</script>
