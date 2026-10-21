@@ -36,9 +36,7 @@ public class TitleProfile : Profile
             .ForMember(d => d.TitleId, o => o.Ignore())
             .ForMember(d => d.PublisherId, o => o.Ignore())
             .ForMember(d => d.Genres, o => o
-                .MapFrom(s => s.Genres != null
-                    ? string.Join("/", s.Genres)
-                    : string.Empty))
+                .MapFrom(s => string.Join("/", s.Genres)))
             .ForMember(d => d.Authors, o => o.Ignore())
             .ForMember(d => d.Publisher, o => o.Ignore());
     }

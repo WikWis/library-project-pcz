@@ -42,29 +42,34 @@ public class TitleController : Controller
     // Zwraca:
     // - 201 Created: obiekt TitleDTO (oraz nagłówek Location: /api/titles/{id})
     // - 400 BadRequest: brak obiektu (gdy createTitleDto to null)
+    // - 404 NotFound: brak wydawcy lub autora w bazie
     [HttpPost]
     public IActionResult Create([FromBody] CreateTitleDTO? createTitleDto)
     {
-        if (createTitleDto == null) return BadRequest();
+        if (createTitleDto == null) return BadRequest("Brak danych w treści.");
 
         var id = titleService.AddTitle(createTitleDto);
-        var title = titleService.GetTitle(id);
 
-        return Created("/api/titles/" + id, title);
+        if (id == null) return NotFound("Wydawca albo autor nie istnieje w bazie danych.");
+        
+        var title = titleService.GetTitle(id.Value);
+
+        return Created("/api/titles/{id.Value}", title);
     }
 
     // PUT /api/titles/{titleId}
     // Zwraca:
     // - 200 OK: zaktualizowany obiekt TitleDTO
-    // - 400 BadRequest: brak obiektu (gdy titleId to null lub createTitleDto to null)
+    // - 400 BadRequest: brak obiektu
     // - 404 NotFound: brak obiektu (gdy tytuł o danym titleId nie istnieje)
-    [HttpPut("{titleId:int?}")]
-    public IActionResult Update(int? titleId, [FromBody] CreateTitleDTO? createTitleDto)
+    [HttpPut("{titleId:int}")]
+    public IActionResult Update(int titleId, [FromBody] CreateTitleDTO? createTitleDto)
     {
-        if (titleId == null || createTitleDto == null) return BadRequest();
+        if (createTitleDto == null) return BadRequest("Brak danych w treści");
+        
         var updateDto = new UpdateTitleDTO()
         {
-            TitleId = (int)titleId,
+            TitleId = titleId,
             Name = createTitleDto.Name,
             DateOfPublishing = createTitleDto.DateOfPublishing,
             ISBN = createTitleDto.ISBN,
@@ -73,8 +78,14 @@ public class TitleController : Controller
             Publisher = createTitleDto.Publisher
         };
 
-        var result = titleService.UpdateTitle(updateDto);
-        return result ? Ok(titleService.GetTitle((int)titleId)) : NotFound();
+        bool isUpdated = titleService.UpdateTitle(updateDto);
+
+        if(!isUpdated)
+        {
+            return NotFound($"Nie znaleziono tytułu o Id: {titleId}");
+        }
+        var result = titleService.GetTitle(titleId);
+        return Ok(result);
     }
 
     // DELETE /api/titles/{titleId}

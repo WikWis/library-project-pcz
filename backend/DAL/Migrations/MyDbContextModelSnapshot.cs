@@ -208,17 +208,15 @@ namespace DAL.Migrations
                     b.Property<DateOnly>("StartDate")
                         .HasColumnType("date");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId1")
+                    b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("BorrowingId");
 
                     b.HasIndex("PieceId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Borrowings");
                 });
@@ -286,7 +284,7 @@ namespace DAL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PublisherId")
+                    b.Property<int?>("PublisherId")
                         .HasColumnType("int");
 
                     b.HasKey("TitleId");
@@ -437,7 +435,9 @@ namespace DAL.Migrations
 
                     b.HasOne("Model.User", "User")
                         .WithMany("Borrowings")
-                        .HasForeignKey("UserId1");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Piece");
 
@@ -457,9 +457,7 @@ namespace DAL.Migrations
                 {
                     b.HasOne("Model.Publisher", "Publisher")
                         .WithMany("Titles")
-                        .HasForeignKey("PublisherId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PublisherId");
 
                     b.Navigation("Publisher");
                 });

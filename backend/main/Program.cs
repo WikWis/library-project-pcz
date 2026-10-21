@@ -8,6 +8,20 @@ using Services.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var allowFrontendOrigin = "_allowFrontendOrigin";
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: allowFrontendOrigin,
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:4321")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        });
+});
+
 builder.Services.AddControllers()
     .AddJsonOptions(x => x.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles);
 
@@ -31,13 +45,12 @@ builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
 
 
-/* Jeśli frontend i backend na innym localhoscie, to odkomentować.
+
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.Cookie.SameSite = SameSiteMode.None;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
-*/
 
 //AutoMapery np.
 builder.Services.AddAutoMapper(_ => { }, typeof(Program).Assembly,  typeof(BaseService).Assembly);
@@ -69,6 +82,9 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+app.UseCors(allowFrontendOrigin);
 
 app.UseAuthentication();
 app.UseAuthorization();

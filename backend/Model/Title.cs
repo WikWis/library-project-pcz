@@ -13,7 +13,7 @@ namespace Model
 
         public string Genres { get; set; } = string.Empty; // FORMAT: genreA/genreB/.../genreX
 
-        public int PublisherId { get; set; }
+        public int? PublisherId { get; set; }
         public virtual Publisher? Publisher { get; set; }
         public virtual ICollection<Author> Authors { get; set; } = [];
     }

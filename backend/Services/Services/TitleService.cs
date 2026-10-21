@@ -50,26 +50,48 @@ namespace Services.Services
             return _mapper.Map<IList<TitleLookupDTO>>(titles);
         }
 
-        public int AddTitle(CreateTitleDTO createTitleDto)
+        public int? AddTitle(CreateTitleDTO createTitleDto)
         {
-            var title = _mapper.Map<Title>(createTitleDto);
+            if (createTitleDto.Publisher != null)
+            {
+                var publisherExists = _dbContext.Publishers
+                    .Any(p => p.PublisherId == createTitleDto.Publisher.PublisherId);
 
-            if(createTitleDto.Authors.Count > 0)
+                if (!publisherExists)
+                {
+                    return null;
+                }
+            }
+
+            List<Author> authors = new();
+            if (createTitleDto.Authors != null && createTitleDto.Authors.Any())
             {
                 var authorIds = createTitleDto.Authors
                     .Select(a => a.AuthorId)
                     .ToList();
 
-                title.Authors = _dbContext.Authors
+                authors = _dbContext.Authors
                     .Where(a => authorIds.Contains(a.AuthorId))
                     .ToList();
+
+                //If author doesn;t exist
+                if (authors.Count != authorIds.Distinct().Count())
+                {
+                    return null;
+                }
             }
 
-            if (createTitleDto.Publisher != null)
+            var title = new Title
             {
-                title.Publisher = _dbContext.Publishers
-                    .Find(createTitleDto.Publisher.PublisherId);
-            }
+                Name = createTitleDto.Name,
+                DateOfPublishing = createTitleDto.DateOfPublishing,
+                ISBN = createTitleDto.ISBN,
+                Genres = createTitleDto.Genres != null && createTitleDto.Genres.Any()
+                    ? string.Join("/", createTitleDto.Genres)
+                    : string.Empty,
+                PublisherId = createTitleDto.Publisher?.PublisherId,
+                Authors = authors
+            };
 
             _dbContext.Titles.Add(title);
             _dbContext.SaveChanges();
@@ -85,23 +107,46 @@ namespace Services.Services
             
             if (title == null) return false;
 
-            _mapper.Map(updateTitleDto, title);
+            if (updateTitleDto.Publisher != null)
+            {
+                var publisherExists = _dbContext.Publishers
+                    .Any(p => p.PublisherId == updateTitleDto.Publisher.PublisherId);
+
+                if (!publisherExists)
+                {
+                    return false;
+                }
+                title.PublisherId = updateTitleDto.Publisher.PublisherId;
+            }
+            else
+            {
+                title.PublisherId = null;
+            }
+            title.Publisher = null;
+
+            title.Name = updateTitleDto.Name;
+            title.DateOfPublishing = updateTitleDto.DateOfPublishing;
+            title.ISBN = updateTitleDto.ISBN;
+            title.Genres = updateTitleDto.Genres != null && updateTitleDto.Genres.Any()
+                ? string.Join("/", updateTitleDto.Genres)
+                : string.Empty;
           
             var authorIds = updateTitleDto.Authors
                 .Select(a => a.AuthorId)
                 .ToList();
-            title.Authors = _dbContext.Authors
+            var newAuthors = _dbContext.Authors
                 .Where(a => authorIds.Contains(a.AuthorId))
                 .ToList();
 
-            if(updateTitleDto.Publisher != null)
+            if (newAuthors.Count != authorIds.Distinct().Count())
             {
-                title.Publisher = _dbContext.Publishers
-                    .Find(updateTitleDto.Publisher.PublisherId);
+                return false;
             }
-            else
+
+            title.Authors.Clear();
+            foreach (var author in newAuthors)
             {
-                title.Publisher = null;
+                title.Authors.Add(author);
             }
 
             _dbContext.SaveChanges();
