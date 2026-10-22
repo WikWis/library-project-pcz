@@ -11,6 +11,9 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 <script>
     import {AuthorService} from "../services/author-service.ts";
     import {TitleService} from "../services/title-service.ts";
+    import {PieceService} from "../services/piece-service.ts";
+    import {PieceState} from "../dto/piece/piece-status.ts";
+    import {PieceStatus} from "../dto/piece/piece-state.ts";
 
 
     // Author Service
@@ -77,6 +80,23 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         },
     }))
     console.log(await titleService.Delete(1042));
+
+    // Piece Service
+    let pieceService: PieceService = new PieceService();
+    console.log(await pieceService.Index())
+    console.log(await pieceService.Details(2))
+    console.log(await pieceService.Create(2004, {
+        TitleId: 1,
+        State: PieceState.Good,
+        Status: PieceStatus.Borrowed
+    }))
+    console.log(await pieceService.Update(2, {
+            PieceId: 2,
+            State: PieceState.Good,
+            Status: PieceStatus.Free
+        }
+    ))
+    console.log(await pieceService.Delete(1002))
 
 
 </script>
