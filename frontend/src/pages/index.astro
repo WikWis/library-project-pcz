@@ -14,6 +14,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     import {PieceService} from "../services/piece-service.ts";
     import {PieceState} from "../dto/piece/piece-status.ts";
     import {PieceStatus} from "../dto/piece/piece-state.ts";
+    import {PublisherService} from "../services/publisher-service.ts";
 
 
     // Author Service
@@ -83,6 +84,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 
     // Piece Service
     let pieceService: PieceService = new PieceService();
+
     console.log(await pieceService.Index())
     console.log(await pieceService.Details(2))
     console.log(await pieceService.Create(2004, {
@@ -97,6 +99,20 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         }
     ))
     console.log(await pieceService.Delete(1002))
+
+    // Publisher Service
+    let publisherService: PublisherService = new PublisherService();
+
+    console.log(await publisherService.Index(0, 1))
+    console.log(await publisherService.Details(32))
+    console.log(await publisherService.Create({
+        Name: "NASDWSFWFA",
+    }))
+    console.log(await publisherService.Update(3, {
+        PublisherId: 3,
+        Name: "nowa 3 nazwa nazaw"
+    }))
+    console.log(await publisherService.Delete(1009))
 
 
 </script>
