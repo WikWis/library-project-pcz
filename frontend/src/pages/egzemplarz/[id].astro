@@ -1,0 +1,14 @@
+---
+export const prerender = false;
+---
+<div id="id"></div>
+
+<script>
+    const pathname = window.location.pathname;
+    const id = pathname.split("/").pop();
+
+    const textContent = document.querySelector<HTMLDivElement>("#id");
+
+    textContent!.textContent = id ?? "0"
+
+</script>

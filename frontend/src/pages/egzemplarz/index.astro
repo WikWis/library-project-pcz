@@ -1,0 +1,83 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+    <h1>Egzemplarze</h1>
+    <p>Na tej stronie znajdziesz listę z dostępnymi egzemplarzami w naszym systemie</p>
+
+    <div class="container">
+
+        <div class="row">
+            <div id="pieces-table">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col d-flex justify-content-between">
+                <button type="button" class="btn btn-primary" id="previous-button" disabled>Previous Page</button>
+                <button type="button" class="btn btn-primary" id="next-button">Next Page</button>
+            </div>
+        </div>
+
+    </div>
+
+</BaseLayout>
+
+<script>
+
+    import {PageNumberProvider} from "../../scripts/page-number-provider.ts";
+    import {PieceService, type PieceServiceInterface} from "../../services/piece-service.ts";
+    import type {PieceLookupDTO} from "../../dto/piece/piece-lookup-dto.ts";
+    import type {PieceDTO} from "../../dto/piece/piece-dto.ts";
+    import {renderPiecesTable} from "../../scripts/pieces-table-init.ts";
+
+    const pieceService: PieceServiceInterface = new PieceService()
+    const pageNumberProvider: PageNumberProvider = new PageNumberProvider();
+
+    const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
+    const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
+    const pieceTableDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#pieces-table")
+
+    async function getPieceDtoList(page: Number, pageSize: Number): Promise<PieceDTO[]> {
+        const pieceLookupDTOS: PieceLookupDTO[] = await pieceService.Index(undefined, page, pageSize);
+
+        const result: (PieceDTO | undefined)[] = await Promise.all(
+            pieceLookupDTOS.map((piece) => pieceService.Details(piece.pieceId))
+        )
+
+        return result.filter((item): item is PieceDTO => item !== undefined);
+    }
+
+    async function changePage(pageNumber: Number) {
+        const pieceListOnNextPage: PieceDTO[] = await getPieceDtoList(pageNumber, 10);
+
+        previousButton!.disabled = pageNumberProvider.lookUp() === 0;
+        nextButton!.disabled = pieceListOnNextPage.length < 10;
+
+        pieceTableDiv!.innerHTML = renderPiecesTable(pieceListOnNextPage);
+    }
+
+    async function nextPage() {
+        await changePage(pageNumberProvider.provideNext())
+    }
+
+    async function previousPage() {
+        await changePage(pageNumberProvider.providePrevious())
+    }
+
+    export async function init() {
+        const initialPiecesList: PieceDTO[] = await getPieceDtoList(0, 10);
+
+        pieceTableDiv!.innerHTML = renderPiecesTable(initialPiecesList);
+
+        previousButton!.disabled = pageNumberProvider.lookUp() === 0;
+        nextButton!.disabled = initialPiecesList.length < 10;
+
+        previousButton!.onclick = previousPage
+        nextButton!.onclick = nextPage
+    }
+
+    init()
+
+</script>

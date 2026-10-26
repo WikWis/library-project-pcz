@@ -25,15 +25,15 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     console.log(await authorService.Details(3123123121))
     console.log(await authorService.Create(
         {
-            Name: "dasdas",
-            Surname: "dasdasdas",
+            name: "dasdas",
+            surname: "dasdasdas",
         }
     ))
     console.log(await authorService.Update(1,
         {
-            AuthorId: 1,
-            Name: "dasdas",
-            Surname: "dasdasdas",
+            authorId: 1,
+            name: "dasdas",
+            surname: "dasdasdas",
         }
     ))
     console.log(await authorService.Delete(2034));
@@ -46,38 +46,38 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     console.log(await titleService.Index(undefined, 3, 1))
     console.log(await titleService.Details(3123123121))
     console.log(await titleService.Create({
-        Name: 'Wiedźmin: Ostatnie życzenie',
-        DateOfPublishing: '1993-11-01',
-        ISBN: 9788375780635,
-        Genres: ['Fantasy', 'Adventure'],
-        Authors: [
+        name: 'Wiedźmin: Ostatnie życzenie',
+        dateOfPublishing: '1993-11-01',
+        isbn: 9788375780635,
+        genres: ['Fantasy', 'Adventure'],
+        authors: [
             {
-                AuthorId: 1,
-                Name: 'Andrzej',
-                Surname: 'Sapkowski',
+                authorId: 1,
+                name: 'Andrzej',
+                surname: 'Sapkowski',
             },
         ],
-        Publisher: {
-            PublisherId: 2,
-            Name: 'superNOWA',
+        publisher: {
+            publisherId: 2,
+            name: 'superNOWA',
         },
     }))
     console.log(await titleService.Update(1, {
-        TitleId: 1,
-        Name: 'Wiedźmin: Ostatnie życzenie',
-        DateOfPublishing: '1993-11-01',
-        ISBN: 9788375780635,
-        Genres: ['Fantasy', 'Adventure'],
-        Authors: [
+        titleId: 1,
+        name: 'Wiedźmin: Ostatnie życzenie',
+        dateOfPublishing: '1993-11-01',
+        isbn: 9788375780635,
+        genres: ['Fantasy', 'Adventure'],
+        authors: [
             {
-                AuthorId: 1,
-                Name: 'Andrzej',
-                Surname: 'Sapkowski',
+                authorId: 1,
+                name: 'Andrzej',
+                surname: 'Sapkowski',
             },
         ],
-        Publisher: {
-            PublisherId: 1,
-            Name: 'superNOWA',
+        publisher: {
+            publisherId: 1,
+            name: 'superNOWA',
         },
     }))
     console.log(await titleService.Delete(1042));
@@ -88,14 +88,14 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     console.log(await pieceService.Index())
     console.log(await pieceService.Details(2))
     console.log(await pieceService.Create(2004, {
-        TitleId: 1,
-        State: PieceState.Good,
-        Status: PieceStatus.Borrowed
+        titleId: 1,
+        state: PieceState.Good,
+        status: PieceStatus.Borrowed
     }))
     console.log(await pieceService.Update(2, {
-            PieceId: 2,
-            State: PieceState.Good,
-            Status: PieceStatus.Free
+            pieceId: 2,
+            state: PieceState.Good,
+            status: PieceStatus.Free
         }
     ))
     console.log(await pieceService.Delete(1002))
@@ -106,11 +106,11 @@ import BaseLayout from "../layouts/BaseLayout.astro";
     console.log(await publisherService.Index(0, 1))
     console.log(await publisherService.Details(32))
     console.log(await publisherService.Create({
-        Name: "NASDWSFWFA",
+        name: "NASDWSFWFA",
     }))
     console.log(await publisherService.Update(3, {
-        PublisherId: 3,
-        Name: "nowa 3 nazwa nazaw"
+        publisherId: 3,
+        name: "nowa 3 nazwa nazaw"
     }))
     console.log(await publisherService.Delete(1009))
 
