@@ -2,9 +2,9 @@ import type {PieceLookupDTO} from "../piece/piece-lookup-dto.ts";
 
 
 export interface BorrowingDTO {
-    BorrowingId: number;
-    StartDate: string;
-    EndDate: string;
-    Piece: PieceLookupDTO | null;
-    UserId: number;
+    borrowingId: number;
+    startDate: string;
+    endDate: string;
+    piece: PieceLookupDTO | null;
+    userId: number;
 }

@@ -1,4 +1,4 @@
 export interface CreateAuthorDTO {
-    Name: string;
-    Surname: string;
+    name: string;
+    surname: string;
 }

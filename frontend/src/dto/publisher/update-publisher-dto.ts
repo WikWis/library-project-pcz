@@ -1,4 +1,4 @@
 export interface UpdatePublisherDTO {
-    PublisherId: number;
-    Name: string;
+    publisherId: number;
+    name: string;
 }

@@ -1,4 +1,4 @@
 export interface PublisherLookupDTO {
-    PublisherId: number;
-    Name: string;
+    publisherId: number;
+    name: string;
 }

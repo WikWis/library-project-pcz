@@ -3,8 +3,8 @@ import type {PieceState} from "./piece-status.ts";
 
 
 export interface PieceLookupDTO {
-    PieceId: number;
-    TitleId: number;
-    Status: PieceStatus;
-    State: PieceState;
+    pieceId: number;
+    titleId: number;
+    status: PieceStatus;
+    state: PieceState;
 }

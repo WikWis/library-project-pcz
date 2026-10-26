@@ -1,3 +1,3 @@
 export interface CreatePublisherDTO {
-    Name: string;
+    name: string;
 }

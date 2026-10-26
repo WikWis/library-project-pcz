@@ -1,5 +1,5 @@
 export interface UpdateAuthorDTO {
-    AuthorId: number;
-    Name: string;
-    Surname: string;
+    authorId: number;
+    name: string;
+    surname: string;
 }

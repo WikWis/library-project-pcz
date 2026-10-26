@@ -3,11 +3,11 @@ import type {PublisherLookupDTO} from "../publisher/publisher-lookup-dto.ts";
 
 
 export interface TitleDTO {
-    TitleId: number;
-    Name: string;
-    DateOfPublishing: string;
-    ISBN: number;
-    Genres: string[];
-    Authors: AuthorLookupDTO[];
-    Publisher: PublisherLookupDTO | null;
+    titleId: number;
+    name: string;
+    dateOfPublishing: string;
+    isbn: number;
+    genres: string[];
+    authors: AuthorLookupDTO[];
+    publisher: PublisherLookupDTO | null;
 }

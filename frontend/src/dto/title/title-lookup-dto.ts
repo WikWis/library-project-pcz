@@ -1,7 +1,7 @@
 export interface TitleLookupDTO {
-    TitleId: number;
-    Name: string;
-    DateOfPublishing: string;
-    ISBN: number;
-    Genres: string[];
+    titleId: number;
+    name: string;
+    dateOfPublishing: string;
+    isbn: number;
+    genres: string[];
 }
