@@ -6,9 +6,18 @@ interface Props {
 const {
     href,
 } = Astro.props
+
+const currentPath = Astro.url.pathname
+const isActive = currentPath == href
 ---
+
 <li class="list-group-item">
-    <a href={href} class="nav-link text-black">
+    <a href={href} class:list={[
+        "nav-link",
+        "text-black",
+        {"fw-bold": isActive}
+    ]}
+    >
         <slot/>
     </a>
 </li>
