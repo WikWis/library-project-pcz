@@ -1,0 +1,73 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+---
+
+<BaseLayout>
+
+    <h1>Autorzy</h1>
+    <p>Strona poświęcona autorom.</p>
+
+    <div class="container">
+
+        <div class="row">
+            <div id="authors-table">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col d-flex justify-content-between">
+                <button type="button" class="btn btn-primary" id="previous-button" disabled>Previous Page</button>
+                <button type="button" class="btn btn-primary" id="next-button">Next Page</button>
+            </div>
+        </div>
+
+    </div>
+
+</BaseLayout>
+
+<script>
+
+    import type {AuthorLookupDTO} from "../../dto/author/author-lookup-dto.ts";
+    import {AuthorService, type AuthorServiceInterface} from "../../services/author-service.ts";
+    import {PageNumberProvider} from "../../scripts/page-number-provider.ts";
+    import {renderAuthorTable} from "../../scripts/authors-table-init.ts";
+
+    const authorService: AuthorServiceInterface = new AuthorService()
+    const pageNumberProvider: PageNumberProvider = new PageNumberProvider();
+
+    const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
+    const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
+    const authorsTableDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#authors-table")
+
+    async function changePage(pageNumber: Number) {
+        const authorListOnNextPage: AuthorLookupDTO[] = await authorService.Index(undefined, pageNumber, 10);
+
+        previousButton!.disabled = pageNumberProvider.lookUp() === 0;
+        nextButton!.disabled = authorListOnNextPage.length < 10;
+
+        authorsTableDiv!.innerHTML = renderAuthorTable(authorListOnNextPage);
+    }
+
+    async function nextPage() {
+        await changePage(pageNumberProvider.provideNext())
+    }
+
+    async function previousPage() {
+        await changePage(pageNumberProvider.providePrevious())
+    }
+
+    export async function init() {
+        const initialAuthorsList: AuthorLookupDTO[] = await authorService.Index(undefined, 0, 10);
+
+        authorsTableDiv!.innerHTML = renderAuthorTable(initialAuthorsList);
+
+        previousButton!.disabled = pageNumberProvider.lookUp() === 0;
+        nextButton!.disabled = initialAuthorsList.length < 10;
+
+        previousButton!.onclick = previousPage
+        nextButton!.onclick = nextPage
+    }
+
+    init()
+
+</script>
