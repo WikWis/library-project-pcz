@@ -4,7 +4,7 @@ import type {PublisherLookupDTO} from "../dto/publisher/publisher-lookup-dto.ts"
 function renderPublisherTableRow(publisherLookupDTO: PublisherLookupDTO): string {
     return `<tr>
                 <td>${publisherLookupDTO.name}</td>
-                <td><a href="/wydawca/${publisherLookupDTO.publisherId}">Lista książek</a></td>
+                <td><a href="/wydawca/detale?id=${publisherLookupDTO.publisherId}">Lista książek</a></td>
             </tr>`
 }
 

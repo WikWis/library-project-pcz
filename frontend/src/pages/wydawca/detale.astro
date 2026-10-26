@@ -1,11 +1,10 @@
 ---
-export const prerender = false;
 ---
 <div id="id"></div>
 
 <script>
-    const pathname = window.location.pathname;
-    const id = pathname.split("/").pop();
+    const params: URLSearchParams = new URLSearchParams(window.location.search);
+    const id: string | null = params.get("id");
 
     const textContent = document.querySelector<HTMLDivElement>("#id");
 

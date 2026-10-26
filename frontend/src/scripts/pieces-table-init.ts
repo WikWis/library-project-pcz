@@ -6,7 +6,7 @@ function renderPieceTableRow(pieceDTO: PieceDTO): string {
                     <td>${pieceDTO.titleName}</td>
                     <td>${pieceDTO.status}</td>
                     <td>${pieceDTO.state}</td>
-                    <td><a href="/egzemplarz/${pieceDTO.pieceId}">Historia wypożyczenia</a></td>
+                    <td><a href="/egzemplarz/detale?id=${pieceDTO.pieceId}">Historia wypożyczenia</a></td>
             </tr>`
 }
 

@@ -4,7 +4,7 @@ import type {AuthorLookupDTO} from "../dto/author/author-lookup-dto.ts";
 function renderAuthorTableRow(authorLookupDTO: AuthorLookupDTO): string {
     return `<tr>
                     <td>${authorLookupDTO.name} ${authorLookupDTO.surname}</td>
-                    <td><a href="/autorzy/${authorLookupDTO.authorId}">Czytaj więcej</a></td>
+                    <td><a href="/autorzy/detale?id=${authorLookupDTO.authorId}">Czytaj więcej</a></td>
                 </tr>`
 }
 
