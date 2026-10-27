@@ -1,5 +1,6 @@
 using AutoMapper;
 using DAL;
+using Microsoft.EntityFrameworkCore;
 using Model;
 using services.DTOs.AuthorDTOs;
 using Services.Interfaces;
@@ -12,9 +13,11 @@ public class AuthorService : BaseService, IAuthorService
     {
     }
 
-    public AuthorDTO? GetAuthor(int publisherId)
+    public AuthorDTO? GetAuthor(int authorId)
     {
-        var author = _dbContext.Authors.Find(publisherId);
+        var author = _dbContext.Authors
+            .Include(a => a.Titles)
+            .FirstOrDefault(a => a.AuthorId == authorId);
         return _mapper.Map<AuthorDTO>(author);
     }
 
@@ -32,7 +35,14 @@ public class AuthorService : BaseService, IAuthorService
 
     public IList<AuthorLookupDTO> GetAuthorsByTitle(int page, int pageSize, int titleId)
     {
-        throw new NotImplementedException();
+        var title = _dbContext.Titles
+            .Include(t => t.Authors)
+            .FirstOrDefault(t => t.TitleId == titleId);
+
+        if(title == null) return [];
+        
+        var pageBegin = page * pageSize;
+        return _mapper.Map<List<AuthorLookupDTO>>(title.Authors.Skip(pageBegin).Take(pageSize));
     }
 
     public int AddAuthor(CreateAuthorDTO createAuthorDto)
@@ -55,9 +65,12 @@ public class AuthorService : BaseService, IAuthorService
     }
 
     public bool DeleteAuthor(int authorId)
-    {
-        var author = _dbContext.Authors.Find(authorId);
+    { 
+        var author = _dbContext.Authors
+            .Include(a => a.Titles)
+            .FirstOrDefault(a => a.AuthorId == authorId);
         if (author == null) return false;
+        if(author.Titles.Count > 0) throw new InvalidOperationException("Cannot delete an Author which has a Title assigned to it");
 
         _dbContext.Authors.Remove(author);
         _dbContext.SaveChanges();

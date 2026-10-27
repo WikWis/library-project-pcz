@@ -31,4 +31,4 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:5111/api/authors/1004
+DELETE http://localhost:5111/api/authors/1

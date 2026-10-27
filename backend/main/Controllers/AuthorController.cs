@@ -58,7 +58,14 @@ public class AuthorController : Controller
     public IActionResult Delete(int? authorId)
     {
         if (authorId == null) return BadRequest();
-        var result = authorService.DeleteAuthor((int)authorId); 
-        return result ? NoContent() : NotFound();
+        try
+        {
+            var result = authorService.DeleteAuthor((int)authorId);
+            return result ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
     }
 }

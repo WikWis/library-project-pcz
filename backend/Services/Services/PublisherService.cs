@@ -1,5 +1,6 @@
 using AutoMapper;
 using DAL;
+using Microsoft.EntityFrameworkCore;
 using Model;
 using services.DTOs.PublisherDTOs;
 using Services.Interfaces;
@@ -50,9 +51,12 @@ public class PublisherService : BaseService, IPublisherService
 
     public bool DeletePublisher(int publisherId)
     {
-        var publisher = _dbContext.Publishers.Find(publisherId);
+        var publisher = _dbContext.Publishers
+            .Include(p => p.Titles)
+            .FirstOrDefault(p => p.PublisherId == publisherId);
         if (publisher == null) return false;
-
+        if (publisher.Titles.Count > 0) throw new InvalidOperationException("Cannot delete an Publisher which has a Title assigned to it");
+        
         _dbContext.Publishers.Remove(publisher);
         _dbContext.SaveChanges();
         return true;    }

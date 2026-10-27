@@ -28,6 +28,8 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddProblemDetails();
+
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
     options.Password.RequireDigit = true;
@@ -43,8 +45,6 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IPieceService, PieceService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
-
-
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

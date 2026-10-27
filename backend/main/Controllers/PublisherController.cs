@@ -52,7 +52,15 @@ public class PublisherController : Controller
     public IActionResult Delete(int? publisherId)
     {
         if (publisherId == null) return BadRequest();
-        var result = publisherService.DeletePublisher((int)publisherId); 
-        return result ? NoContent() : NotFound();
+
+        try
+        {
+            var result = publisherService.DeletePublisher((int)publisherId);
+            return result ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(ex.Message);
+        }
     }
 }

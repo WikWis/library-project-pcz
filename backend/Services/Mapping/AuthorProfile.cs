@@ -9,8 +9,7 @@ public class AuthorProfile : Profile
     public AuthorProfile()
     {
         CreateMap<Author, AuthorLookupDTO>();
-        CreateMap<Author, AuthorDTO>()
-            .ForMember(d => d.Titles, o => o.Ignore());
+        CreateMap<Author, AuthorDTO>();
         CreateMap<CreateAuthorDTO, Author>()
             .ForMember(d=>d.AuthorId, o=>o.Ignore())
             .ForMember(d=>d.Titles, o=>o.Ignore());

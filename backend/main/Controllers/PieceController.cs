@@ -4,6 +4,8 @@ using Services.Interfaces;
 
 namespace main.Controllers
 {
+    [ApiController]
+    [Route("/api/pieces")]
     public class PieceController : Controller
     {
         private readonly IPieceService pieceService;
