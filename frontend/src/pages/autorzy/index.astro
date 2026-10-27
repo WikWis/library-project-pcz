@@ -57,12 +57,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     }
 
     export async function init() {
-        const initialAuthorsList: AuthorLookupDTO[] = await authorService.Index(undefined, 0, 10);
-
-        authorsTableDiv!.innerHTML = renderAuthorTable(initialAuthorsList);
-
-        previousButton!.disabled = pageNumberProvider.lookUp() === 0;
-        nextButton!.disabled = initialAuthorsList.length < 10;
+        await changePage(0)
 
         previousButton!.onclick = previousPage
         nextButton!.onclick = nextPage

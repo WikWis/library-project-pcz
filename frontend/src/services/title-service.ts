@@ -22,17 +22,18 @@ export class TitleService implements TitleServiceInterface {
 
     private static endpoint: string = config.public.backendUrl + "/titles"
 
-    async Index(titleId?: Number, page?: Number, pageSize?: Number): Promise<TitleLookupDTO[]> {
+    async Index(authorId?: Number, page?: Number, pageSize?: Number): Promise<TitleLookupDTO[]> {
 
         const config: AxiosRequestConfig = {
             params: {
-                titleId: titleId ?? null,
+                authorId: authorId ?? null,
                 page: page ?? null,
                 pageSize: pageSize ?? null
             }
         }
 
         const response = await axios.get<TitleLookupDTO[]>(TitleService.endpoint, config);
+        console.log(response.data)
         return response.data;
     }
 
