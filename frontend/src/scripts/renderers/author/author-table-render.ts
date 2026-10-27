@@ -1,4 +1,4 @@
-import type {AuthorLookupDTO} from "../dto/author/author-lookup-dto.ts";
+import type {AuthorLookupDTO} from "../../../dto/author/author-lookup-dto.ts";
 
 
 function renderAuthorTableRow(authorLookupDTO: AuthorLookupDTO): string {

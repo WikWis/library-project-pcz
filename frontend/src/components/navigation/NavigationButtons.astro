@@ -1,0 +1,15 @@
+---
+interface Props {
+    previousButtonId: string,
+    nextButtonId: string
+}
+
+const {
+    previousButtonId,
+    nextButtonId,
+} = Astro.props
+---
+<div class="col d-flex justify-content-between">
+    <button type="button" class="btn btn-primary" id={previousButtonId} disabled>Previous Page</button>
+    <button type="button" class="btn btn-primary" id={nextButtonId}>Next Page</button>
+</div>

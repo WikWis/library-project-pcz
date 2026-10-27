@@ -1,5 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import NavigationButtons from "../../components/navigation/NavigationButtons.astro";
+import PublisherTable from "../../components/table/PublisherTable.astro";
 ---
 
 <BaseLayout>
@@ -9,64 +11,18 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
     <div class="container">
 
         <div class="row">
-            <div id="publisher-table">
-            </div>
+            <PublisherTable publisherTableId="publisher-table"/>
         </div>
 
         <div class="row">
-            <div class="col d-flex justify-content-between">
-                <button type="button" class="btn btn-primary" id="previous-button" disabled>Previous Page</button>
-                <button type="button" class="btn btn-primary" id="next-button">Next Page</button>
-            </div>
+            <NavigationButtons previousButtonId="previous-button" nextButtonId="next-button"/>
         </div>
 
     </div>
-
 </BaseLayout>
 
 <script>
-
-    import {PublisherService, type PublisherServiceInterface} from "../../services/publisher-service.ts";
-    import {PageNumberProvider} from "../../scripts/page-number-provider.ts";
-    import type {PublisherLookupDTO} from "../../dto/publisher/publisher-lookup-dto.ts";
-    import {renderPublisherTable} from "../../scripts/publisher-table-init.ts";
-
-    const publisher: PublisherServiceInterface = new PublisherService()
-    const pageNumberProvider: PageNumberProvider = new PageNumberProvider();
-
-    const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
-    const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
-    const publishersTableDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#publisher-table")
-
-    async function changePage(pageNumber: Number) {
-        const publisherListOnNextPage: PublisherLookupDTO[] = await publisher.Index(pageNumber, 10);
-
-        previousButton!.disabled = pageNumberProvider.lookUp() === 0;
-        nextButton!.disabled = publisherListOnNextPage.length < 10;
-
-        publishersTableDiv!.innerHTML = renderPublisherTable(publisherListOnNextPage);
-    }
-
-    async function nextPage() {
-        await changePage(pageNumberProvider.provideNext())
-    }
-
-    async function previousPage() {
-        await changePage(pageNumberProvider.providePrevious())
-    }
-
-    export async function init() {
-        const initialPublishersList: PublisherLookupDTO[] = await publisher.Index(0, 10);
-
-        publishersTableDiv!.innerHTML = renderPublisherTable(initialPublishersList);
-
-        previousButton!.disabled = pageNumberProvider.lookUp() === 0;
-        nextButton!.disabled = initialPublishersList.length < 10;
-
-        previousButton!.onclick = previousPage
-        nextButton!.onclick = nextPage
-    }
+    import {init} from "../../scripts/pages/wydawca";
 
     init()
-
 </script>

@@ -1,4 +1,4 @@
-import type {PublisherLookupDTO} from "../dto/publisher/publisher-lookup-dto.ts";
+import type {PublisherLookupDTO} from "../../../dto/publisher/publisher-lookup-dto.ts";
 
 
 function renderPublisherTableRow(publisherLookupDTO: PublisherLookupDTO): string {

@@ -1,4 +1,4 @@
-import type {TitleLookupDTO} from "../dto/title/title-lookup-dto.ts";
+import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 
 
 function renderTitleTableRow(titleLookupDTO: TitleLookupDTO): string {

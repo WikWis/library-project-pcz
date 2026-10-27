@@ -1,4 +1,4 @@
-import type {PieceDTO} from "../dto/piece/piece-dto.ts";
+import type {PieceDTO} from "../../../dto/piece/piece-dto.ts";
 
 
 function renderPieceTableRow(pieceDTO: PieceDTO): string {
@@ -10,7 +10,7 @@ function renderPieceTableRow(pieceDTO: PieceDTO): string {
             </tr>`
 }
 
-export function renderPiecesTable(pieceDTOS: PieceDTO[]): string {
+export function renderPieceTable(pieceDTOS: PieceDTO[]): string {
     const tableRows: string = pieceDTOS.map(renderPieceTableRow).join("\n");
 
     return `

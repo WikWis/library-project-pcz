@@ -3,11 +3,7 @@
 <div id="id"></div>
 
 <script>
-    const params: URLSearchParams = new URLSearchParams(window.location.search);
-    const id: string | null = params.get("id");
+    import {init} from "../../scripts/pages/egzemplarz/detale.ts";
 
-    const textContent = document.querySelector<HTMLDivElement>("#id");
-
-    textContent!.textContent = id ?? "0"
-
+    init()
 </script>
