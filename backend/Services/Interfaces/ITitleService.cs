@@ -7,12 +7,12 @@ namespace Services.Interfaces
 {
     public interface ITitleService
     {
-        TitleDTO? GetTitle(int publisherId);
-        IList<TitleLookupDTO> GetTitles(int page, int pageSize);
-        IList<TitleLookupDTO> GetTitlesByAuthor(int page, int pageSize, int authorId);
+        Task<TitleDTO> GetTitleAsync(int publisherId);
+        Task<IList<TitleLookupDTO>> GetTitlesAsync(int page, int pageSize);
+        Task<IList<TitleLookupDTO>> GetTitlesByAuthorAsync(int page, int pageSize, int authorId);
 
-        int? AddTitle(CreateTitleDTO createTitleDto);
-        bool UpdateTitle(UpdateTitleDTO updateTitleDto);
-        bool DeleteTitle(int titleId);
+        Task<int> AddTitleAsync(CreateTitleDTO createTitleDto);
+        Task UpdateTitleAsync(UpdateTitleDTO updateTitleDto);
+        Task DeleteTitleAsync(int titleId);
     }
 }

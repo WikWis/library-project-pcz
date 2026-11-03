@@ -6,25 +6,32 @@ namespace main.Controllers;
 
 [ApiController]
 [Route("/api/titles")]
-public class TitleController : Controller
+public class TitleController : ControllerBase
 {
-    private readonly ITitleService titleService;
+    private readonly ITitleService _titleService;
 
     public TitleController(ITitleService titleService)
     {
-        this.titleService = titleService;
+        _titleService = titleService;
     }
 
     // GET /api/titles
     // Zwraca:
     // - 200 OK: lista IList<TitleLookupDTO>
     [HttpGet]
-    public IActionResult Index([FromQuery] int? authorId, [FromQuery] int page = 0, [FromQuery] int pageSize = 20)
+    public async Task<IActionResult> Index([FromQuery] int? authorId, [FromQuery] int page = 0, [FromQuery] int pageSize = 20)
     {
-        var titleLookupDtos = authorId == null
-            ? titleService.GetTitles(page, pageSize)
-            : titleService.GetTitlesByAuthor(page, pageSize, (int)authorId);
-        return Ok(titleLookupDtos);
+        try
+        {
+            var titleLookupDtos = authorId == null
+                ? await _titleService.GetTitlesAsync(page, pageSize)
+                : await _titleService.GetTitlesByAuthorAsync(page, pageSize, (int)authorId);
+            return Ok(titleLookupDtos);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     // GET /api/titles/{titleId}
@@ -32,29 +39,53 @@ public class TitleController : Controller
     // - 200 OK: obiekt TitleDTO
     // - 404 NotFound: brak obiektu (gdy ID nie istnieje w bazie)
     [HttpGet("{titleId:int}")]
-    public IActionResult Details(int titleId)
+    public async Task<IActionResult> Details(int titleId)
     {
-        var titleDto = titleService.GetTitle(titleId);
-        return titleDto == null ? NotFound() : Ok(titleDto);
+        try 
+        { 
+            var titleDto = await _titleService.GetTitleAsync(titleId);
+            return Ok(titleDto);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     // POST /api/titles
     // Zwraca:
-    // - 201 Created: obiekt TitleDTO (oraz nagłówek Location: /api/titles/{id})
+    // - 201 Created: obiekt TitleDTO
     // - 400 BadRequest: brak obiektu (gdy createTitleDto to null)
     // - 404 NotFound: brak wydawcy lub autora w bazie
     [HttpPost]
-    public IActionResult Create([FromBody] CreateTitleDTO? createTitleDto)
+    public async Task<IActionResult> Create([FromBody] CreateTitleDTO? createTitleDto)
     {
-        if (createTitleDto == null) return BadRequest("Brak danych w treści.");
+        if (createTitleDto == null)
+            return BadRequest(new { message = "Brak danych w treści żądania." });
 
-        var id = titleService.AddTitle(createTitleDto);
+        try
+        {
+            int newTitleId = await _titleService.AddTitleAsync(createTitleDto);
+            var createdTitle = await _titleService.GetTitleAsync(newTitleId);
 
-        if (id == null) return NotFound("Wydawca albo autor nie istnieje w bazie danych.");
-        
-        var title = titleService.GetTitle(id.Value);
-
-        return Created("/api/titles/{id.Value}", title);
+            return CreatedAtAction(nameof(Details), new { titleId = newTitleId }, createdTitle);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     // PUT /api/titles/{titleId}
@@ -63,9 +94,12 @@ public class TitleController : Controller
     // - 400 BadRequest: brak obiektu
     // - 404 NotFound: brak obiektu (gdy tytuł o danym titleId nie istnieje)
     [HttpPut("{titleId:int}")]
-    public IActionResult Update(int titleId, [FromBody] CreateTitleDTO? createTitleDto)
+    public async Task<IActionResult> Update(int titleId, [FromBody] CreateTitleDTO? createTitleDto)
     {
-        if (createTitleDto == null) return BadRequest("Brak danych w treści");
+        if (createTitleDto == null)
+        {
+            return BadRequest(new { message = "Brak danych w treści żądania." });
+        }
         
         var updateDto = new UpdateTitleDTO()
         {
@@ -78,14 +112,25 @@ public class TitleController : Controller
             Publisher = createTitleDto.Publisher
         };
 
-        bool isUpdated = titleService.UpdateTitle(updateDto);
-
-        if(!isUpdated)
+        try
         {
-            return NotFound($"Nie znaleziono tytułu o Id: {titleId}");
+            await _titleService.UpdateTitleAsync(updateDto);
+            var updatedTitle = await _titleService.GetTitleAsync(titleId);
+
+            return Ok(updatedTitle);
         }
-        var result = titleService.GetTitle(titleId);
-        return Ok(result);
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     // DELETE /api/titles/{titleId}
@@ -93,12 +138,21 @@ public class TitleController : Controller
     // - 204 NoContent: brak obiektu (rekord został pomyślnie usunięty)
     // - 400 BadRequest: brak obiektu (gdy titleId to null)
     // - 404 NotFound: brak obiektu (gdy rekord o danym ID nie istnieje)
-    [HttpDelete("{titleId:int?}")]
-    public IActionResult Delete(int? titleId)
+    [HttpDelete("{titleId:int}")]
+    public async Task<IActionResult> Delete(int titleId)
     {
-        if (titleId == null) return BadRequest();
-        var result = titleService.DeleteTitle((int)titleId);
-
-        return result ? NoContent() : NotFound();
+        try
+        {
+            await _titleService.DeleteTitleAsync(titleId);
+            return NoContent();
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 }

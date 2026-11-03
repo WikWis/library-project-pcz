@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using DAL;
 using Microsoft.EntityFrameworkCore;
 using Model;
@@ -16,68 +17,119 @@ namespace Services.Services
         {
         }
 
-        public TitleDTO? GetTitle(int titleId)
+        public async Task<TitleDTO> GetTitleAsync(int titleId)
         {
-            var title = _dbContext.Titles
+            if (titleId <= 0) 
+            {
+                throw new ArgumentException("Id tytułu musi być większy od zera.", nameof(titleId));
+            }
+
+
+            var title = await _dbContext.Titles
                 .Include(t => t.Authors)
                 .Include(t => t.Publisher)
-                .FirstOrDefault(t => t.TitleId == titleId);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(t => t.TitleId == titleId);
+
+            if (title == null)
+            {
+                throw new KeyNotFoundException($"Nie znaleziono tytułu o ID: {titleId}.");
+            }
+
             return _mapper.Map<TitleDTO>(title);
         }
 
-        public IList<TitleLookupDTO> GetTitles(int page, int pageSize)
+        public async Task<IList<TitleLookupDTO>> GetTitlesAsync(int page, int pageSize)
         {
             var pageBegin = page * pageSize;
-            var titles = _dbContext.Titles
+            var titles = await _dbContext.Titles
+                .AsNoTracking()
                 .OrderBy(t => t.TitleId)
                 .Skip(pageBegin)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
             return _mapper.Map<IList<TitleLookupDTO>>(titles);
+
         }
 
-        public IList<TitleLookupDTO> GetTitlesByAuthor(int page, int pageSize, int authorId)
+        public async Task<IList<TitleLookupDTO>> GetTitlesByAuthorAsync(int page, int pageSize, int authorId)
         {
+            if (authorId <= 0)
+            {
+                throw new ArgumentException("Identyfikator autora musi być większy od zera.", nameof(authorId));
+            }
+
+            bool authorExists = await _dbContext.Authors.AnyAsync(a => a.AuthorId == authorId);
+            if (!authorExists)
+            {
+                throw new KeyNotFoundException($"Autor o ID {authorId} nie istnieje w bazie danych.");
+            }
+
             var pageBegin = page * pageSize;
-            var titles = _dbContext.Titles
+            var titles = await _dbContext.Titles
+                .AsNoTracking()
                 .Where(t => t.Authors.Any(a => a.AuthorId == authorId))
                 .OrderBy(t => t.TitleId)
                 .Skip(pageBegin)
                 .Take(pageSize)
-                .ToList();
+                .ToListAsync();
 
             return _mapper.Map<IList<TitleLookupDTO>>(titles);
         }
 
-        public int? AddTitle(CreateTitleDTO createTitleDto)
+        public async Task<int> AddTitleAsync(CreateTitleDTO createTitleDto)
         {
-            if (createTitleDto.Publisher != null)
+            if (createTitleDto == null)
             {
-                var publisherExists = _dbContext.Publishers
-                    .Any(p => p.PublisherId == createTitleDto.Publisher.PublisherId);
+                throw new ArgumentNullException(nameof(createTitleDto), "Dane do utworzenia tytułu nie mogą być puste.");
+            }
 
-                if (!publisherExists)
+            if (createTitleDto.DateOfPublishing > DateOnly.FromDateTime(DateTime.Now))
+            {
+                throw new ArgumentException("Data publikacji nie może być datą z przyszłości.");
+            }
+
+            // czy ISBN jest unikalny
+            if (!string.IsNullOrWhiteSpace(createTitleDto.ISBN))
+            {
+                var cleanIsbn = createTitleDto.ISBN.Trim();
+                bool isbnExists = await _dbContext.Titles.AnyAsync(t => t.ISBN == cleanIsbn);
+                if (isbnExists)
                 {
-                    return null;
+                    throw new InvalidOperationException($"Tytuł z numerem ISBN '{cleanIsbn}' już istnieje.");
                 }
             }
 
+            //czy wydawca istnieje
+            if (createTitleDto.Publisher != null)
+            {
+                bool publisherExists = await _dbContext.Publishers
+                    .AnyAsync(p => p.PublisherId == createTitleDto.Publisher.PublisherId);
+
+                if (!publisherExists)
+                {
+                    throw new KeyNotFoundException($"Wydawca o ID {createTitleDto.Publisher.PublisherId} nie istnieje.");
+                }
+            }
+
+            // czy autorzy istnieją
             List<Author> authors = new();
             if (createTitleDto.Authors != null && createTitleDto.Authors.Any())
             {
                 var authorIds = createTitleDto.Authors
                     .Select(a => a.AuthorId)
+                    .Distinct()
                     .ToList();
 
-                authors = _dbContext.Authors
+                authors = await _dbContext.Authors
                     .Where(a => authorIds.Contains(a.AuthorId))
-                    .ToList();
+                    .ToListAsync();
 
-                //If author doesn;t exist
-                if (authors.Count != authorIds.Distinct().Count())
+                // jeśli któryś z autorów nie istnieje
+                if (authors.Count != authorIds.Count)
                 {
-                    return null;
+                    throw new KeyNotFoundException("1 lub więcej podanych autorów nie istnieje w bazie danych.");
                 }
             }
 
@@ -94,54 +146,80 @@ namespace Services.Services
             };
 
             _dbContext.Titles.Add(title);
-            _dbContext.SaveChanges();
+            await _dbContext.SaveChangesAsync();
             return title.TitleId;
         }
 
-        public bool UpdateTitle(UpdateTitleDTO updateTitleDto)
+        public async Task UpdateTitleAsync(UpdateTitleDTO updateTitleDto)
         {
-            var title = _dbContext.Titles
+            if (updateTitleDto == null)
+            {
+                throw new ArgumentNullException(nameof(updateTitleDto), "Dane do aktualizacji tytułu nie mogą być puste.");
+            }
+
+            if (updateTitleDto.TitleId <= 0)
+            {
+                throw new ArgumentException("Identyfikator tytułu musi być większy od zera.", nameof(updateTitleDto.TitleId));
+            }
+
+            var title = await _dbContext.Titles
                 .Include(t => t.Authors)
-                .Include(t => t.Publisher)
-                .FirstOrDefault(t => t.TitleId == updateTitleDto.TitleId);
-            
-            if (title == null) return false;
+                .FirstOrDefaultAsync(t => t.TitleId == updateTitleDto.TitleId);
+
+            if (title == null)
+            {
+                throw new KeyNotFoundException($"Nie znaleziono tytułu o ID: {updateTitleDto.TitleId}.");
+            }
+
+            if (updateTitleDto.DateOfPublishing > DateOnly.FromDateTime(DateTime.Now))
+            {
+                throw new ArgumentException("Data publikacji nie może być datą z przyszłości.");
+            }
+
+            // czy ISBN jest unikalny
+            if (!string.IsNullOrWhiteSpace(updateTitleDto.ISBN))
+            {
+                var cleanIsbn = updateTitleDto.ISBN.Trim();
+                bool isbnExists = await _dbContext.Titles
+                    .AnyAsync(t => t.ISBN == cleanIsbn && t.TitleId != updateTitleDto.TitleId);
+
+                if (isbnExists)
+                {
+                    throw new InvalidOperationException($"Inny tytuł posiada już numer ISBN '{cleanIsbn}'.");
+                }
+            }
 
             if (updateTitleDto.Publisher != null)
             {
-                var publisherExists = _dbContext.Publishers
-                    .Any(p => p.PublisherId == updateTitleDto.Publisher.PublisherId);
+                bool publisherExists = await _dbContext.Publishers
+                    .AnyAsync(p => p.PublisherId == updateTitleDto.Publisher.PublisherId);
 
                 if (!publisherExists)
                 {
-                    return false;
+                    throw new KeyNotFoundException($"Wydawca o ID {updateTitleDto.Publisher.PublisherId} nie istnieje.");
                 }
-                title.PublisherId = updateTitleDto.Publisher.PublisherId;
             }
-            else
-            {
-                title.PublisherId = null;
-            }
-            title.Publisher = null;
 
-            title.Name = updateTitleDto.Name;
-            title.DateOfPublishing = updateTitleDto.DateOfPublishing;
-            title.ISBN = updateTitleDto.ISBN;
-            title.Genres = updateTitleDto.Genres != null && updateTitleDto.Genres.Any()
-                ? string.Join("/", updateTitleDto.Genres)
-                : string.Empty;
-          
-            var authorIds = updateTitleDto.Authors
-                .Select(a => a.AuthorId)
-                .ToList();
-            var newAuthors = _dbContext.Authors
-                .Where(a => authorIds.Contains(a.AuthorId))
-                .ToList();
-
-            if (newAuthors.Count != authorIds.Distinct().Count())
+            List<Author> newAuthors = new();
+            if (updateTitleDto.Authors != null && updateTitleDto.Authors.Any())
             {
-                return false;
+                var authorIds = updateTitleDto.Authors
+                    .Select(a => a.AuthorId)
+                    .Distinct()
+                    .ToList();
+
+                newAuthors = await _dbContext.Authors
+                    .Where(a => authorIds.Contains(a.AuthorId))
+                    .ToListAsync();
+
+                if (newAuthors.Count != authorIds.Count)
+                {
+                    throw new KeyNotFoundException("1 lub więcej podanych autorów nie istnieje.");
+                }
             }
+
+            _mapper.Map(updateTitleDto, title);
+            title.PublisherId = updateTitleDto.Publisher?.PublisherId;
 
             title.Authors.Clear();
             foreach (var author in newAuthors)
@@ -149,20 +227,25 @@ namespace Services.Services
                 title.Authors.Add(author);
             }
 
-            _dbContext.SaveChanges();
-            return true;
+            await _dbContext.SaveChangesAsync();
+
         }
 
-        public bool DeleteTitle(int titleId)
+        public async Task DeleteTitleAsync(int titleId)
         {
-            var title = _dbContext.Titles
-                .Find(titleId);
+            if (titleId <= 0)
+            {
+                throw new ArgumentException("Identyfikator tytułu musi być większy od zera.", nameof(titleId));
+            }
 
-            if (title == null) return false;
+            int deletedRows = await _dbContext.Titles
+                .Where(t => t.TitleId == titleId)
+                .ExecuteDeleteAsync();
 
-            _dbContext.Titles.Remove(title);
-            _dbContext.SaveChanges();
-            return true;
+            if (deletedRows == 0)
+            {
+                throw new KeyNotFoundException($"Nie znaleziono tytułu o ID {titleId} do usunięcia.");
+            }
         }
     }
 }

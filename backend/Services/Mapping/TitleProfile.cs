@@ -20,14 +20,14 @@ public class TitleProfile : Profile
                 .MapFrom(s => string.IsNullOrWhiteSpace(s.Genres)
                     ? new List<string>()
                     : s.Genres.Split('/', StringSplitOptions.RemoveEmptyEntries)
-                    .ToList()));
+                        .ToList()));
 
         CreateMap<CreateTitleDTO, Title>()
             .ForMember(d => d.TitleId, o => o.Ignore())
             .ForMember(d => d.PublisherId, o => o.Ignore())
             .ForMember(d => d.Genres, o => o
-                .MapFrom(s => s.Genres != null
-                    ? string.Join("/", s.Genres)
+                .MapFrom(s => s.Genres != null && s.Genres.Any()
+                    ? string.Join("/", s.Genres.Select(g => g.Trim()))
                     : string.Empty))
             .ForMember(d => d.Authors, o => o.Ignore())
             .ForMember(d => d.Publisher, o => o.Ignore());
@@ -36,7 +36,9 @@ public class TitleProfile : Profile
             .ForMember(d => d.TitleId, o => o.Ignore())
             .ForMember(d => d.PublisherId, o => o.Ignore())
             .ForMember(d => d.Genres, o => o
-                .MapFrom(s => string.Join("/", s.Genres)))
+                .MapFrom(s => s.Genres != null && s.Genres.Any()
+                ? string.Join("/", s.Genres.Select(g => g.Trim()))
+                : string.Empty))
             .ForMember(d => d.Authors, o => o.Ignore())
             .ForMember(d => d.Publisher, o => o.Ignore());
     }

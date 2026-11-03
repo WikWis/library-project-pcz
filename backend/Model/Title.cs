@@ -9,7 +9,7 @@ namespace Model
         public int TitleId { get; set; }
         public string Name { get; set; } = string.Empty;
         public DateOnly DateOfPublishing { get; set; }
-        public long ISBN { get; set; }
+        public string ISBN { get; set; } = string.Empty;
 
         public string Genres { get; set; } = string.Empty; // FORMAT: genreA/genreB/.../genreX
 
