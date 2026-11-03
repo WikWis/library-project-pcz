@@ -33,7 +33,6 @@ export class TitleService implements TitleServiceInterface {
         }
 
         const response = await axios.get<TitleLookupDTO[]>(TitleService.endpoint, config);
-        console.log(response.data)
         return response.data;
     }
 
