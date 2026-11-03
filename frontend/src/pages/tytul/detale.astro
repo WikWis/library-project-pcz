@@ -1,7 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import TitleTable from "../../components/table/TitleTable.astro";
-import NavigationButtons from "../../components/navigation/NavigationButtons.astro";
+import TitleDetails from "../../components/title/TitleDetails.astro";
 ---
 
 <BaseLayout>
@@ -17,7 +16,7 @@ import NavigationButtons from "../../components/navigation/NavigationButtons.ast
         <div id="content">
 
             <div class="row">
-                <div id="title-data"></div>
+                <TitleDetails/>
             </div>
 
         </div>
