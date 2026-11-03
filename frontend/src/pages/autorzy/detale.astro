@@ -1,10 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import TitleTable from "../../components/table/TitleTable.astro";
-import NavigationButtons from "../../components/navigation/NavigationButtons.astro";
 ---
 
 <BaseLayout>
+    <h1>Autorzy</h1>
+    <p>Strona poświęcona autorom.</p>
+
     <div class="container">
 
         <div id="not-found-message" class="row" hidden>
@@ -15,15 +16,6 @@ import NavigationButtons from "../../components/navigation/NavigationButtons.ast
 
             <div class="row">
                 <div id="author-data"></div>
-            </div>
-
-            <div class="row">
-                <h3>Książki tego autora:</h3>
-                <TitleTable titleTableId="titles-table"/>
-            </div>
-
-            <div class="row">
-                <NavigationButtons previousButtonId="previous-button" nextButtonId="next-button"/>
             </div>
 
         </div>
