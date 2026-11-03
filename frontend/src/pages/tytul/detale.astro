@@ -1,3 +1,32 @@
 ---
-
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TitleTable from "../../components/table/TitleTable.astro";
+import NavigationButtons from "../../components/navigation/NavigationButtons.astro";
 ---
+
+<BaseLayout>
+    <h1>Tytuły</h1>
+    <p>Na tej stronie znajdziesz listę z tytułów dostępnych w naszym systemie</p>
+
+    <div class="container">
+
+        <div id="not-found-message" class="row" hidden>
+            <h1>Nie znaleziono autora!</h1>
+        </div>
+
+        <div id="content">
+
+            <div class="row">
+                <div id="title-data"></div>
+            </div>
+
+        </div>
+
+    </div>
+</BaseLayout>
+
+<script>
+    import {init} from "../../scripts/pages/tytul/detale.ts";
+
+    init()
+</script>
