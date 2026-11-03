@@ -1,6 +1,27 @@
 ---
+import BaseLayout from "../../layouts/BaseLayout.astro";
 ---
-<div id="id"></div>
+
+<BaseLayout>
+    <h1>Wydawcy</h1>
+    <p>Na tej stronie znajdziesz listę z wydawców zawartych w naszym systemie</p>
+
+    <div class="container">
+
+        <div id="not-found-message" class="row" hidden>
+            <h1>Nie znaleziono autora!</h1>
+        </div>
+
+        <div id="content">
+
+            <div class="row">
+                <div id="publisher-data"></div>
+            </div>
+
+        </div>
+
+    </div>
+</BaseLayout>
 
 <script>
     import {init} from "../../scripts/pages/wydawca/detale.ts";
