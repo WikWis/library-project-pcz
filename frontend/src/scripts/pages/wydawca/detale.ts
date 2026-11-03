@@ -1,14 +1,11 @@
-import { PublisherService, type PublisherServiceInterface } from "../../../services/publisher-service.ts";
-import { TitleService, type TitleServiceInterface } from "../../../services/title-service.ts";
-import { PageNumberProvider } from "../../page-number-provider.ts";
+import {PublisherService, type PublisherServiceInterface} from "../../../services/publisher-service.ts";
+import {TitleService, type TitleServiceInterface} from "../../../services/title-service.ts";
+import {PageNumberProvider} from "../../page-number-provider.ts";
 
-import type { TitleLookupDTO } from "../../../dto/title/title-lookup-dto.ts";
-import type { PublisherDTO } from "../../../dto/publisher/publisher-dto.ts";
+import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
+import type {PublisherDTO} from "../../../dto/publisher/publisher-dto.ts";
 
-import {
-    renderPublisherDetails,
-    renderTitles
-} from "../../renderers/publisher/publisher-details-render.ts";
+import {renderTitles} from "../../renderers/publisher/publisher-details-render.ts";
 
 const params = new URLSearchParams(window.location.search);
 const pathId: string | null = params.get("id");
@@ -16,21 +13,26 @@ const pathId: string | null = params.get("id");
 const notFoundMessageDiv = document.querySelector<HTMLDivElement>("#not-found-message")
 const contentDiv = document.querySelector<HTMLDivElement>("#content")
 
-const publisherDataDiv = document.querySelector<HTMLDivElement>("#publisher-data")
+const publisherIdDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#publisher-id")
+const publisherNameDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#publisher-name")
+const publisherTitlesList = document.querySelector<HTMLDivElement>("#publisher-titles-list");
+
+const previousButton = document.querySelector<HTMLButtonElement>("#previous-button");
+const nextButton = document.querySelector<HTMLButtonElement>("#next-button");
 
 const publisherService: PublisherServiceInterface = new PublisherService();
 const titlesService: TitleServiceInterface = new TitleService();
 const pageNumberProvider = new PageNumberProvider();
 
+function setUpAstroElements(publisher: PublisherDTO) {
+    publisherIdDiv!.innerText = publisher.publisherId.toString()
+    publisherNameDiv!.innerText = publisher.name;
+}
+
 async function changePage(pageNumber: Number, publisherId: Number): Promise<void> {
     const titles: TitleLookupDTO[] = await titlesService.Index(publisherId, pageNumber, 10);
 
-    const titlesList = document.querySelector<HTMLDivElement>("#titles-list");
-    const previousButton = document.querySelector<HTMLButtonElement>("#previous-button");
-    const nextButton = document.querySelector<HTMLButtonElement>("#next-button");
-
-
-    titlesList!.innerHTML = renderTitles(titles);
+    publisherTitlesList!.innerHTML = renderTitles(titles);
 
     previousButton!.disabled = pageNumber === 0;
     nextButton!.disabled = titles.length < 10;
@@ -54,7 +56,7 @@ export async function init(): Promise<void> {
         return;
     }
 
-    publisherDataDiv!.innerHTML = renderPublisherDetails(publisherDto);
+    setUpAstroElements(publisherDto);
     await changePage(0, publisherDto.publisherId);
 
     const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
