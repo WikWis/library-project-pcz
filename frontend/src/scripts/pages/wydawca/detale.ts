@@ -4,11 +4,11 @@ import {TitleService, type TitleServiceInterface} from "../../../services/title-
 import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import type {PublisherDTO} from "../../../dto/publisher/publisher-dto.ts";
 
-import {renderTitles} from "../../renderers/publisher/publisher-details-render.ts";
 import type {PageDataProviderInterface} from "../../pagination/page-data-provider/page-data-provider.ts";
 import type {PageRendererInterface} from "../../pagination/page-renderer.ts";
 import {PageSwitcher} from "../../pagination/page-switcher.ts";
 import {setupPagination} from "../../pagination/pagination.ts";
+import {renderTitlesGroupList} from "../../renderers/titles/title-group-list-render.ts";
 
 const params = new URLSearchParams(window.location.search);
 const pathId: string | null = params.get("id");
@@ -45,7 +45,7 @@ const pageDataProvider: PageDataProviderInterface<TitleLookupDTO> = new class im
 
 const pageRenderer: PageRendererInterface<TitleLookupDTO> = new class implements PageRendererInterface<TitleLookupDTO> {
     render(data: TitleLookupDTO[]): string {
-        return renderTitles(data);
+        return renderTitlesGroupList(data);
     }
 }
 

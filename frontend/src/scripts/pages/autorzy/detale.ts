@@ -3,10 +3,10 @@ import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import type {AuthorDTO} from "../../../dto/author/author-dto.ts";
 import {PageSwitcher} from "../../pagination/page-switcher.ts";
 import type {PageRendererInterface} from "../../pagination/page-renderer.ts";
-import {renderTitleTable} from "../../renderers/titles/title-table-render.ts";
 import type {PageDataProviderInterface} from "../../pagination/page-data-provider/page-data-provider.ts";
 import {TitleLookupPageDataProvider} from "../../pagination/page-data-provider/title-lookup-page-data-provider.ts";
 import {setupPagination} from "../../pagination/pagination.ts";
+import {renderTitlesGroupList} from "../../renderers/titles/title-group-list-render.ts";
 
 // Getting query param
 const params: URLSearchParams = new URLSearchParams(window.location.search);
@@ -49,7 +49,7 @@ export async function init() {
 
     const pageRenderer: PageRendererInterface<TitleLookupDTO> = new class implements PageRendererInterface<TitleLookupDTO> {
         render(data: TitleLookupDTO[]): string {
-            return renderTitleTable(data);
+            return renderTitlesGroupList(data);
         }
     }
 

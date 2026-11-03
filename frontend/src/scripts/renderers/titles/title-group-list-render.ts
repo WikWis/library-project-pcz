@@ -18,11 +18,11 @@ function renderTitle(titleLookupDTO: TitleLookupDTO): string {
     `
 }
 
-export function renderTitles(titleLookUpDTOs: TitleLookupDTO[]): string {
+export function renderTitlesGroupList(titleLookUpDTOs: TitleLookupDTO[]): string {
     if (titleLookUpDTOs.length === 0) {
         return `
             <div class="alert alert-light border text-muted mb-0">
-                Autor nie ma przypisanych żadnych tytułów.
+                Nie znaleziono żadnych tytułów.
             </div>
         `
     }
