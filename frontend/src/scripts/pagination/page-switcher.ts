@@ -1,6 +1,6 @@
 import {type PageNumberInterface, PageNumberProvider} from "./page-number-provider.ts";
 import type {PageRendererInterface} from "./page-renderer.ts";
-import type {PageDataProviderInterface} from "./page-data-provider.ts";
+import type {PageDataProviderInterface} from "./page-data-provider/page-data-provider.ts";
 
 export interface PageSwitcherInterface {
     nextPage(): void;

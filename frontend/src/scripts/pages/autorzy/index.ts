@@ -1,36 +1,38 @@
 import {AuthorService, type AuthorServiceInterface} from "../../../services/author-service.ts";
-import {PageNumberProvider} from "../../pagination/page-number-provider.ts";
 import type {AuthorLookupDTO} from "../../../dto/author/author-lookup-dto.ts";
+import type {PageDataProviderInterface} from "../../pagination/page-data-provider/page-data-provider.ts";
+import type {PageRendererInterface} from "../../pagination/page-renderer.ts";
+import {PageSwitcher} from "../../pagination/page-switcher.ts";
+import {setupPagination} from "../../pagination/pagination.ts";
 import {renderAuthorTable} from "../../renderers/author/author-table-render.ts";
-
-
-const authorService: AuthorServiceInterface = new AuthorService()
-const pageNumberProvider: PageNumberProvider = new PageNumberProvider();
 
 const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
 const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
 const authorsTableDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#authors-table")
 
-async function changePage(pageNumber: Number) {
-    const authorListOnNextPage: AuthorLookupDTO[] = await authorService.Index(undefined, pageNumber, 10);
+const pageDataProvider: PageDataProviderInterface<AuthorLookupDTO> = new class implements PageDataProviderInterface<AuthorLookupDTO> {
+    authorService: AuthorServiceInterface = new AuthorService()
 
-    previousButton!.disabled = pageNumberProvider.lookUp() === 0;
-    nextButton!.disabled = authorListOnNextPage.length < 10;
+    async getPageItemCount(pageNumber: Number): Promise<Number> {
+        return (await this.authorService.Index(undefined, pageNumber, 10)).length;
+    }
 
-    authorsTableDiv!.innerHTML = renderAuthorTable(authorListOnNextPage);
+    async providePage(pageNumber: Number): Promise<AuthorLookupDTO[]> {
+        return await this.authorService.Index(undefined, pageNumber, 10);
+    }
 }
-
-async function nextPage() {
-    await changePage(pageNumberProvider.provideNext())
-}
-
-async function previousPage() {
-    await changePage(pageNumberProvider.providePrevious())
+const pageRenderer: PageRendererInterface<AuthorLookupDTO> = new class implements PageRendererInterface<AuthorLookupDTO> {
+    render(data: AuthorLookupDTO[]): string {
+        return renderAuthorTable(data);
+    }
 }
 
 export async function init() {
-    await changePage(0)
+    if (authorsTableDiv === null || previousButton === null || nextButton === null) {
+        throw new Error("No all elements needed are present.");
+    }
 
-    previousButton!.onclick = previousPage
-    nextButton!.onclick = nextPage
+    const pageSwitcher: PageSwitcher<AuthorLookupDTO> = new PageSwitcher<AuthorLookupDTO>(pageDataProvider, pageRenderer, authorsTableDiv)
+
+    await setupPagination(pageSwitcher, previousButton, nextButton);
 }

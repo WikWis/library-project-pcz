@@ -3,7 +3,8 @@ import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import {renderTitleTable} from "../../renderers/titles/title-table-render.ts";
 import {PageSwitcher} from "../../pagination/page-switcher.ts";
 import type {PageRendererInterface} from "../../pagination/page-renderer.ts";
-import type {PageDataProviderInterface} from "../../pagination/page-data-provider.ts";
+import type {PageDataProviderInterface} from "../../pagination/page-data-provider/page-data-provider.ts";
+import {setupPagination} from "../../pagination/pagination.ts";
 
 
 const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
@@ -12,11 +13,6 @@ const publishersTableDiv: HTMLDivElement | null = document.querySelector<HTMLDiv
 
 if (publishersTableDiv === null) {
     throw new Error("No publisher table!");
-}
-
-async function updateNavigationButtons(pageSwitcher: PageSwitcher<any>) {
-    previousButton!.disabled = pageSwitcher.getCurrentPage().valueOf() === 0;
-    nextButton!.disabled = (await pageSwitcher.getPageItemCount()).valueOf() < 10;
 }
 
 const pageRenderer: PageRendererInterface<TitleLookupDTO> = new class implements PageRendererInterface<TitleLookupDTO> {
@@ -40,16 +36,9 @@ const pageDataProvider: PageDataProviderInterface<TitleLookupDTO> = new class im
 const pageSwitcher: PageSwitcher<TitleLookupDTO> = new PageSwitcher<TitleLookupDTO>(pageDataProvider, pageRenderer, publishersTableDiv)
 
 export async function init() {
-
-    await pageSwitcher.initialize()
-    await updateNavigationButtons(pageSwitcher)
-
-    previousButton!.onclick = () => {
-        pageSwitcher.previousPage();
-        updateNavigationButtons(pageSwitcher)
+    if (previousButton === null || nextButton === null) {
+        throw new Error("No all elements needed are present.");
     }
-    nextButton!.onclick = () => {
-        pageSwitcher.nextPage();
-        updateNavigationButtons(pageSwitcher)
-    }
+
+    await setupPagination(pageSwitcher, previousButton, nextButton);
 }

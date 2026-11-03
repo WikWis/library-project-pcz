@@ -1,11 +1,14 @@
 import {PublisherService, type PublisherServiceInterface} from "../../../services/publisher-service.ts";
 import {TitleService, type TitleServiceInterface} from "../../../services/title-service.ts";
-import {PageNumberProvider} from "../../pagination/page-number-provider.ts";
 
 import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import type {PublisherDTO} from "../../../dto/publisher/publisher-dto.ts";
 
 import {renderTitles} from "../../renderers/publisher/publisher-details-render.ts";
+import type {PageDataProviderInterface} from "../../pagination/page-data-provider/page-data-provider.ts";
+import type {PageRendererInterface} from "../../pagination/page-renderer.ts";
+import {PageSwitcher} from "../../pagination/page-switcher.ts";
+import {setupPagination} from "../../pagination/pagination.ts";
 
 const params = new URLSearchParams(window.location.search);
 const pathId: string | null = params.get("id");
@@ -21,51 +24,43 @@ const previousButton = document.querySelector<HTMLButtonElement>("#previous-butt
 const nextButton = document.querySelector<HTMLButtonElement>("#next-button");
 
 const publisherService: PublisherServiceInterface = new PublisherService();
-const titlesService: TitleServiceInterface = new TitleService();
-const pageNumberProvider = new PageNumberProvider();
 
 function setUpAstroElements(publisher: PublisherDTO) {
     publisherIdDiv!.innerText = publisher.publisherId.toString()
     publisherNameDiv!.innerText = publisher.name;
 }
 
-async function changePage(pageNumber: Number, publisherId: Number): Promise<void> {
-    const titles: TitleLookupDTO[] = await titlesService.Index(publisherId, pageNumber, 10);
+// For now renders every book, there is no endpoint for titles published by specific publisher
+const pageDataProvider: PageDataProviderInterface<TitleLookupDTO> = new class implements PageDataProviderInterface<TitleLookupDTO> {
+    titleService: TitleServiceInterface = new TitleService()
 
-    publisherTitlesList!.innerHTML = renderTitles(titles);
+    async getPageItemCount(pageNumber: Number): Promise<Number> {
+        return (await this.titleService.Index(undefined, pageNumber, 10)).length;
+    }
 
-    previousButton!.disabled = pageNumber === 0;
-    nextButton!.disabled = titles.length < 10;
+    async providePage(pageNumber: Number): Promise<TitleLookupDTO[]> {
+        return await this.titleService.Index(undefined, pageNumber, 10);
+    }
 }
 
-async function nextPage(authorId: Number) {
-    await changePage(pageNumberProvider.provideNext(), authorId)
-}
-
-async function previousPage(authorId: Number) {
-    await changePage(pageNumberProvider.providePrevious(), authorId)
+const pageRenderer: PageRendererInterface<TitleLookupDTO> = new class implements PageRendererInterface<TitleLookupDTO> {
+    render(data: TitleLookupDTO[]): string {
+        return renderTitles(data);
+    }
 }
 
 export async function init(): Promise<void> {
     const id: Number = Number.parseInt(pathId ?? "0")
     const publisherDto: PublisherDTO | undefined = await publisherService.Details(id)
 
-    if (id === 0 || isNaN(id.valueOf()) || publisherDto === undefined) {
+    if (id === 0 || isNaN(id.valueOf()) || publisherDto === undefined || publisherTitlesList === null || previousButton === null || nextButton === null) {
         notFoundMessageDiv!.hidden = false;
         contentDiv!.hidden = true;
         return;
     }
 
     setUpAstroElements(publisherDto);
-    await changePage(0, publisherDto.publisherId);
 
-    const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
-    const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
-
-    previousButton!.onclick = () => {
-        previousPage(publisherDto.publisherId)
-    }
-    nextButton!.onclick = () => {
-        nextPage(publisherDto.publisherId)
-    }
+    const pageSwitcher: PageSwitcher<TitleLookupDTO> = new PageSwitcher<TitleLookupDTO>(pageDataProvider, pageRenderer, publisherTitlesList)
+    await setupPagination(pageSwitcher, previousButton, nextButton);
 }

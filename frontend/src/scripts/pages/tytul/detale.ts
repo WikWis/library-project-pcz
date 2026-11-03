@@ -7,7 +7,6 @@ const pathId: string | null = params.get("id");
 
 const notFoundMessageDiv = document.querySelector<HTMLDivElement>("#not-found-message")
 const contentDiv = document.querySelector<HTMLDivElement>("#content")
-const titleDataDiv = document.querySelector<HTMLDivElement>("#title-data")
 
 const titleIdDiv = document.querySelector<HTMLDivElement>("#title-id")
 const titleNameDiv = document.querySelector<HTMLDivElement>("#title-name")
