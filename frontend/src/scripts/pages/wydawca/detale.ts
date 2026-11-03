@@ -1,6 +1,6 @@
 import {PublisherService, type PublisherServiceInterface} from "../../../services/publisher-service.ts";
 import {TitleService, type TitleServiceInterface} from "../../../services/title-service.ts";
-import {PageNumberProvider} from "../../page-number-provider.ts";
+import {PageNumberProvider} from "../../pagination/page-number-provider.ts";
 
 import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import type {PublisherDTO} from "../../../dto/publisher/publisher-dto.ts";

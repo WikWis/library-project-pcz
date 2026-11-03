@@ -1,41 +1,55 @@
-import {PageNumberProvider} from "../../page-number-provider.ts";
 import {TitleService, type TitleServiceInterface} from "../../../services/title-service.ts";
 import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import {renderTitleTable} from "../../renderers/titles/title-table-render.ts";
+import {PageSwitcher} from "../../pagination/page-switcher.ts";
+import type {PageRendererInterface} from "../../pagination/page-renderer.ts";
+import type {PageDataProviderInterface} from "../../pagination/page-data-provider.ts";
 
-
-const title: TitleServiceInterface = new TitleService()
-const pageNumberProvider: PageNumberProvider = new PageNumberProvider();
 
 const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
 const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
 const publishersTableDiv: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#title-table")
 
-async function changePage(pageNumber: Number) {
-    const titleListOnNextPage: TitleLookupDTO[] = await title.Index(undefined, pageNumber, 10);
-
-    previousButton!.disabled = pageNumberProvider.lookUp() === 0;
-    nextButton!.disabled = titleListOnNextPage.length < 10;
-
-    publishersTableDiv!.innerHTML = renderTitleTable(titleListOnNextPage);
+if (publishersTableDiv === null) {
+    throw new Error("No publisher table!");
 }
 
-async function nextPage() {
-    await changePage(pageNumberProvider.provideNext())
+async function updateNavigationButtons(pageSwitcher: PageSwitcher<any>) {
+    previousButton!.disabled = pageSwitcher.getCurrentPage().valueOf() === 0;
+    nextButton!.disabled = (await pageSwitcher.getPageItemCount()).valueOf() < 10;
 }
 
-async function previousPage() {
-    await changePage(pageNumberProvider.providePrevious())
+const pageRenderer: PageRendererInterface<TitleLookupDTO> = new class implements PageRendererInterface<TitleLookupDTO> {
+    render(data: TitleLookupDTO[]): string {
+        return renderTitleTable(data);
+    }
 }
+
+const pageDataProvider: PageDataProviderInterface<TitleLookupDTO> = new class implements PageDataProviderInterface<TitleLookupDTO> {
+    titleService: TitleServiceInterface = new TitleService()
+
+    async providePage(pageNumber: Number): Promise<TitleLookupDTO[]> {
+        return await this.titleService.Index(undefined, pageNumber, 10);
+    }
+
+    async getPageItemCount(pageNumber: Number): Promise<Number> {
+        return (await this.titleService.Index(undefined, pageNumber, 10)).length;
+    }
+}
+
+const pageSwitcher: PageSwitcher<TitleLookupDTO> = new PageSwitcher<TitleLookupDTO>(pageDataProvider, pageRenderer, publishersTableDiv)
 
 export async function init() {
-    const initialTitleList: TitleLookupDTO[] = await title.Index(undefined, 0, 10);
 
-    publishersTableDiv!.innerHTML = renderTitleTable(initialTitleList);
+    await pageSwitcher.initialize()
+    await updateNavigationButtons(pageSwitcher)
 
-    previousButton!.disabled = pageNumberProvider.lookUp() === 0;
-    nextButton!.disabled = initialTitleList.length < 10;
-
-    previousButton!.onclick = previousPage
-    nextButton!.onclick = nextPage
+    previousButton!.onclick = () => {
+        pageSwitcher.previousPage();
+        updateNavigationButtons(pageSwitcher)
+    }
+    nextButton!.onclick = () => {
+        pageSwitcher.nextPage();
+        updateNavigationButtons(pageSwitcher)
+    }
 }

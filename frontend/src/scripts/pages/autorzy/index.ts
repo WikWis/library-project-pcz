@@ -1,5 +1,5 @@
 import {AuthorService, type AuthorServiceInterface} from "../../../services/author-service.ts";
-import {PageNumberProvider} from "../../page-number-provider.ts";
+import {PageNumberProvider} from "../../pagination/page-number-provider.ts";
 import type {AuthorLookupDTO} from "../../../dto/author/author-lookup-dto.ts";
 import {renderAuthorTable} from "../../renderers/author/author-table-render.ts";
 

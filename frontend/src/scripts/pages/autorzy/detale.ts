@@ -1,6 +1,6 @@
 import {AuthorService, type AuthorServiceInterface} from "../../../services/author-service.ts";
 import {TitleService, type TitleServiceInterface} from "../../../services/title-service.ts";
-import {PageNumberProvider} from "../../page-number-provider.ts";
+import {PageNumberProvider} from "../../pagination/page-number-provider.ts";
 import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import type {AuthorDTO} from "../../../dto/author/author-dto.ts";
 import {renderTitles} from "../../renderers/author/author-details-render.ts";

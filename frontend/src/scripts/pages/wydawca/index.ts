@@ -1,5 +1,5 @@
 import {PublisherService, type PublisherServiceInterface} from "../../../services/publisher-service.ts";
-import {PageNumberProvider} from "../../page-number-provider.ts";
+import {PageNumberProvider} from "../../pagination/page-number-provider.ts";
 import type {PublisherLookupDTO} from "../../../dto/publisher/publisher-lookup-dto.ts";
 import {renderPublisherTable} from "../../renderers/publisher/publisher-table-render.ts";
 

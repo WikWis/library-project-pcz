@@ -1,4 +1,4 @@
-import {PageNumberProvider} from "../../page-number-provider.ts";
+import {PageNumberProvider} from "../../pagination/page-number-provider.ts";
 import {PieceService, type PieceServiceInterface} from "../../../services/piece-service.ts";
 import type {PieceDTO} from "../../../dto/piece/piece-dto.ts";
 import type {PieceLookupDTO} from "../../../dto/piece/piece-lookup-dto.ts";
