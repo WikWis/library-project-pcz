@@ -1,0 +1,51 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SuccessAlert from "../../components/alert/SuccessAlert.astro";
+import DangerAlert from "../../components/alert/DangerAlert.astro";
+---
+<BaseLayout>
+    <h1>Autorzy</h1>
+    <p>Strona poświęcona autorom.</p>
+
+    <SuccessAlert id="author-success-alert" message="Udało sie zapisać autora" isHidden={true}/>
+    <DangerAlert id="author-danger-alert" message="Nie udało sie zapisać autora." isHidden={true}/>
+
+    <div class="card shadow-sm w-100">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Dodaj autora</h4>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="mb-3 col-md-6">
+                <label for="author-name-input" class="form-label">Imię</label>
+                <input type="text" class="form-control" id="author-name-input" aria-describedby="author-name-feedback"
+                       required>
+                <div id="author-name-feedback" class="invalid-feedback">
+                    Proszę wpisz imię
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label for="author-surname-input" class="form-label">Nazwisko</label>
+                <input type="text" class="form-control" id="author-surname-input"
+                       aria-describedby="author-surname-feedback" required>
+                <div id="author-surname-feedback" class="invalid-feedback">
+                    Proszę wpisz nazwisko
+                </div>
+            </div>
+
+            <button id="submit-author-button" type="submit" class="btn btn-primary">Dodaj</button>
+
+        </div>
+
+    </div>
+
+</BaseLayout>
+
+<script>
+    import {init} from "../../scripts/pages/autorzy/utworz.ts";
+
+    init()
+</script>
