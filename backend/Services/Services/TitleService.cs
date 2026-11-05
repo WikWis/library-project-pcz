@@ -78,6 +78,31 @@ namespace Services.Services
             return _mapper.Map<IList<TitleLookupDTO>>(titles);
         }
 
+        public async Task<IList<TitleLookupDTO>> GetTitlesByPublisherAsync(int page, int pageSize, int publisherId)
+        {
+            if (publisherId <= 0)
+            {
+                throw new ArgumentException("Id wydawnictwa musi być większe od 0.", nameof(publisherId));
+            }
+
+            bool publisherExists = await _dbContext.Publishers.AnyAsync(p => p.PublisherId == publisherId);
+            if (!publisherExists)
+            {
+                throw new KeyNotFoundException($"Wydawnictwo o ID {publisherId} nie istnieje w bazie danych.");
+            }
+
+            var pageBegin = page * pageSize;
+            var titles = await _dbContext.Titles
+                .AsNoTracking()
+                .Where(t => t.PublisherId == publisherId)
+                .OrderBy(t => t.TitleId)
+                .Skip(pageBegin)
+                .Take(pageSize)
+                .ToListAsync();
+
+            return _mapper.Map<IList<TitleLookupDTO>>(titles);
+        }
+
         public async Task<int> AddTitleAsync(CreateTitleDTO createTitleDto)
         {
             if (createTitleDto == null)

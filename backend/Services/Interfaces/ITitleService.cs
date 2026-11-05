@@ -10,6 +10,7 @@ namespace Services.Interfaces
         Task<TitleDTO> GetTitleAsync(int publisherId);
         Task<IList<TitleLookupDTO>> GetTitlesAsync(int page, int pageSize);
         Task<IList<TitleLookupDTO>> GetTitlesByAuthorAsync(int page, int pageSize, int authorId);
+        Task<IList<TitleLookupDTO>> GetTitlesByPublisherAsync(int page, int pageSize, int publisherId);
 
         Task<int> AddTitleAsync(CreateTitleDTO createTitleDto);
         Task UpdateTitleAsync(UpdateTitleDTO updateTitleDto);

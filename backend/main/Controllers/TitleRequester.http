@@ -13,6 +13,12 @@ GET http://localhost:5111/api/titles?pageSize=2&page=2
 ### Pobranie tytułów przypisanych do konkretnego autora
 GET http://localhost:5111/api/titles?authorId=1&pageSize=5&page=1
 
+### Pobranie tytułów przypisanych do konkretnego wydawnictwa
+GET http://localhost:5111/api/titles?publisherId=1&pageSize=5&page=1
+
+### Pobranie tytułów dla nieistniejącego wydawnictwa (zwraca 404)
+GET http://localhost:5111/api/titles?publisherId=9999
+
 ### Pobranie szczegółów pojedynczego tytułu po ID
 GET http://localhost:5111/api/titles/1
 

@@ -18,15 +18,34 @@ public class TitleController : ControllerBase
     // GET /api/titles
     // Zwraca:
     // - 200 OK: lista IList<TitleLookupDTO>
+    // - 404 NotFound: gdy autor lub wydawca o podanym ID nie istnieje
+    // - 400 BadRequest: niepoprawne dane wejściowe
     [HttpGet]
-    public async Task<IActionResult> Index([FromQuery] int? authorId, [FromQuery] int page = 0, [FromQuery] int pageSize = 20)
+    public async Task<IActionResult> Index(
+        [FromQuery] int? authorId, [FromQuery] int? publisherId, [FromQuery] int page = 0, [FromQuery] int pageSize = 20)
     {
         try
         {
-            var titleLookupDtos = authorId == null
-                ? await _titleService.GetTitlesAsync(page, pageSize)
-                : await _titleService.GetTitlesByAuthorAsync(page, pageSize, (int)authorId);
+            IList<TitleLookupDTO> titleLookupDtos;
+
+            if (authorId != null)
+            {
+                titleLookupDtos = await _titleService.GetTitlesByAuthorAsync(page, pageSize, authorId.Value);
+            }
+            else if (publisherId != null)
+            {
+                titleLookupDtos = await _titleService.GetTitlesByPublisherAsync(page, pageSize, publisherId.Value);
+            }
+            else
+            {
+                titleLookupDtos = await _titleService.GetTitlesAsync(page, pageSize);
+            }
+
             return Ok(titleLookupDtos);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
         catch (ArgumentException ex)
         {
