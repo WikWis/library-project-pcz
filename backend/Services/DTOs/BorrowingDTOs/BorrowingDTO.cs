@@ -9,6 +9,6 @@ public class BorrowingDTO
     public DateOnly StartDate { get; set; }
     public DateOnly EndDate { get; set; }
 
-    public PieceLookupDTO? Piece { get; set; }
-    public int UserId { get; set; }
+    public PieceLookupDTO Piece { get; set; } = null!;
+    public string UserId { get; set; } = string.Empty;
 }

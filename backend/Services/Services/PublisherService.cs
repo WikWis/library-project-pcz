@@ -23,11 +23,11 @@ public class PublisherService : BaseService, IPublisherService
     {
         var pageBegin = page * pageSize;
         IList<Publisher> authors = _dbContext.Publishers
-            .OrderBy(a=>a.PublisherId)
+            .OrderBy(a => a.PublisherId)
             .Skip(pageBegin)
             .Take(pageSize)
             .ToList();
-        
+
         return _mapper.Map<IList<PublisherLookupDTO>>(authors);
     }
 
@@ -55,9 +55,11 @@ public class PublisherService : BaseService, IPublisherService
             .Include(p => p.Titles)
             .FirstOrDefault(p => p.PublisherId == publisherId);
         if (publisher == null) return false;
-        if (publisher.Titles.Count > 0) throw new InvalidOperationException("Cannot delete an Publisher which has a Title assigned to it");
-        
+        if (publisher.Titles.Count > 0)
+            throw new InvalidOperationException("Cannot delete an Publisher which has a Title assigned to it");
+
         _dbContext.Publishers.Remove(publisher);
         _dbContext.SaveChanges();
-        return true;    }
+        return true;
+    }
 }

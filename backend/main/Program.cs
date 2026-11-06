@@ -45,6 +45,7 @@ builder.Services.AddScoped<IAuthorService, AuthorService>();
 builder.Services.AddScoped<IPieceService, PieceService>();
 builder.Services.AddScoped<IPublisherService, PublisherService>();
 builder.Services.AddScoped<ITitleService, TitleService>();
+builder.Services.AddScoped<IBorrowingService, BorrowingService>();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {

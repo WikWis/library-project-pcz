@@ -1,0 +1,25 @@
+### Zawiera zaimplementowaną paginację
+GET http://localhost:5111/api/borrowings?userId=1a2b3c4d5e
+
+###
+POST http://localhost:5111/api/borrowings
+Content-Type: application/json
+
+{
+  "pieceId": 1,
+  "userId": "1a2b3c4d5e",
+  "startDate": "2026-11-01",
+  "endDate": "2026-12-01"
+}
+
+###
+PUT http://localhost:5111/api/borrowings/1
+Content-Type: application/json
+
+{
+  "startDate": "2026-11-11",
+  "endDate": "2026-12-11"
+}
+
+###
+DELETE http://localhost:5111/api/authors/1
