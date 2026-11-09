@@ -1,8 +1,8 @@
 import type {CreateAuthorDTO} from "../../../dto/author/create-author-dto.ts";
-import {AuthorCreationSubject} from "../../alert/author/author-creation-subject.ts";
-import {AuthorCreationObserver} from "../../alert/author/author-creation-observer.ts";
+import {AuthorSaveSubject} from "../../alert/author/author-save-subject.ts";
 import {InputValidSubject} from "../../alert/input/input-valid-subject.ts";
 import {InputValidObserver} from "../../alert/input/input-valid-observer.ts";
+import {SaveObserver} from "../../alert/save/save-observer.ts";
 
 const nameInput: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#author-name-input');
 const surnameInput: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#author-surname-input');
@@ -24,8 +24,8 @@ export async function init(): Promise<void> {
         throw new Error("Not every element is present!");
     }
 
-    const authorCreationSubject: AuthorCreationSubject = new AuthorCreationSubject()
-    const authorCreationObserver: AuthorCreationObserver = new AuthorCreationObserver((wasAuthorCreated: Boolean) => {
+    const authorSaveSubject: AuthorSaveSubject = new AuthorSaveSubject()
+    const authorSaveObserver: SaveObserver = new SaveObserver((wasAuthorCreated: Boolean) => {
         if (wasAuthorCreated) {
             nameInput.value = "";
             surnameInput.value = "";
@@ -33,7 +33,7 @@ export async function init(): Promise<void> {
         creationSuccessAlert.classList.toggle("d-none", !wasAuthorCreated);
         errorAlert.classList.toggle("d-none", wasAuthorCreated.valueOf());
     });
-    authorCreationSubject.attach(authorCreationObserver)
+    authorSaveSubject.attach(authorSaveObserver)
 
     const inputValidSubject: InputValidSubject = new InputValidSubject();
     const inputValidationObserver: InputValidObserver = new InputValidObserver((areInputsValid: Boolean) => {
@@ -43,7 +43,7 @@ export async function init(): Promise<void> {
     });
     inputValidSubject.attach(inputValidationObserver);
 
-    createAuthorButton.addEventListener('click', async (): Promise<void> => {
+    createAuthorButton.click = async (): Promise<void> => {
         const areInputsValid: boolean = inputValidSubject.areInputsValid([
             surnameInput,
             nameInput
@@ -55,7 +55,6 @@ export async function init(): Promise<void> {
 
         // Save Author
         const authorDto: CreateAuthorDTO = createAuthorDTO(nameInput, surnameInput);
-        await authorCreationSubject.createAuthor(authorDto)
-
-    });
+        await authorSaveSubject.saveElement(authorDto)
+    };
 }

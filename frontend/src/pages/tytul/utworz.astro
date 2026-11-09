@@ -1,0 +1,112 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SuccessAlert from "../../components/alert/SuccessAlert.astro";
+import DangerAlert from "../../components/alert/DangerAlert.astro";
+
+const genres: string[] = [
+    "Fantasy",
+    "Sci-Fi",
+    "Horror",
+    "Romance",
+    "Thriller",
+    "Comedy",
+    "Drama",
+    "Adventure"
+];
+---
+<BaseLayout>
+    <h1>Tytuły</h1>
+    <p>Na tej stronie znajdziesz listę z tytułów dostępnych w naszym systemie</p>
+
+    <SuccessAlert id="title-success-alert" message="Udało sie zapisać tytułu" isHidden={true}/>
+    <DangerAlert id="title-danger-alert" message="Nie udało sie zapisać tytułu." isHidden={true}/>
+
+    <div class="card shadow-sm w-100">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Dodaj Tytuł</h4>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="mb-3 col-md-6">
+                <label for="title-name-input" class="form-label">Nazwa</label>
+                <input type="text" class="form-control" id="title-name-input" aria-describedby="title-name-feedback"
+                       required>
+                <div id="title-name-feedback" class="invalid-feedback">
+                    Proszę wpisz nazwę.
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label for="title-date-of-publishing-input" class="form-label">Data Publikacji</label>
+                <input type="date" class="form-control" id="title-date-of-publishing-input"
+                       aria-describedby="title-date-of-publishing-feedback" required>
+                <div id="title-date-of-publishing-feedback" class="invalid-feedback">
+                    Proszę wpisać datę publikacji.
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label for="title-isbn-input" class="form-label">ISBN</label>
+                <input type="number" class="form-control" id="title-isbn-input"
+                       aria-describedby="title-isbn-feedback" required>
+                <div id="title-isbn--feedback" class="invalid-feedback">
+                    Proszę wpisać ISBN.
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <label for="title-genre-input" class="form-label">Gatunki:</label>
+                {genres.map((genre) => (
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" value={genre}
+                                   id={`title-genre-input-${genre}`}/>
+                            <label class="form-check-label" for={`title-genre-input-${genre}`}>
+                                {genre}
+                            </label>
+                        </div>
+                ))}
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                        Wybierz autorów
+                    </button>
+
+                    <div class="dropdown-menu p-3 w-100">
+                        <div id="authors-checkbox-list">
+                            <p class="text-muted mb-0">Ładowanie autorów...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3 col-md-6">
+                <div class="dropdown">
+                    <button class="btn btn-outline-secondary dropdown-toggle w-100 text-start" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" id="publisherDropdown">
+                        Wybierz wydawcę
+                    </button>
+
+                    <div class="dropdown-menu p-3 w-100" id="publisher-checkbox-list">
+                        <p class="text-muted mb-0">Ładowanie wydawców...</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="submit-title-button" type="submit" class="btn btn-primary">Dodaj</button>
+
+        </div>
+
+    </div>
+
+</BaseLayout>
+
+<script>
+    import {init} from "../../scripts/pages/tytul/utworz.ts";
+
+    init()
+</script>
