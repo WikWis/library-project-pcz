@@ -1,0 +1,42 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import SuccessAlert from "../../components/alert/SuccessAlert.astro";
+import DangerAlert from "../../components/alert/DangerAlert.astro";
+---
+<BaseLayout>
+    <h1>Wydawcy</h1>
+    <p>Na tej stronie znajdziesz listę z wydawców zawartych w naszym systemie</p>
+
+    <SuccessAlert id="publisher-success-alert" message="Udało sie zapisać wydawcy." isHidden={true}/>
+    <DangerAlert id="publisher-danger-alert" message="Nie udało sie zapisać wydawcy." isHidden={true}/>
+
+    <div class="card shadow-sm w-100">
+
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Dodaj wydawce</h4>
+        </div>
+
+        <div class="card-body p-4">
+
+            <div class="mb-3 col-md-6">
+                <label for="publisher-name-input" class="form-label">Nazwa</label>
+                <input type="text" class="form-control" id="publisher-name-input" aria-describedby="publisher-name-feedback"
+                       required>
+                <div id="publisher-name-feedback" class="invalid-feedback">
+                    Proszę wpisz nazwę wydawnictwa!
+                </div>
+            </div>
+
+            <button id="submit-publisher-button" type="submit" class="btn btn-primary">Dodaj</button>
+
+        </div>
+
+    </div>
+
+</BaseLayout>
+
+<script>
+    import {init} from "../../scripts/pages/wydawca/utworz.ts";
+
+    init()
+</script>
