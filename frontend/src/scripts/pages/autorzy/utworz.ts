@@ -1,6 +1,15 @@
 import type {CreateAuthorDTO} from "../../../dto/author/create-author-dto.ts";
-import {AuthorService, type AuthorServiceInterface} from "../../../services/author-service.ts";
-import type {AuthorDTO} from "../../../dto/author/author-dto.ts";
+import {AuthorCreationSubject} from "../../alert/author/author-creation-subject.ts";
+import {AuthorCreationObserver} from "../../alert/author/author-creation-observer.ts";
+import {InputValidSubject} from "../../alert/input/input-valid-subject.ts";
+import {InputValidObserver} from "../../alert/input/input-valid-observer.ts";
+
+const nameInput: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#author-name-input');
+const surnameInput: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#author-surname-input');
+const createAuthorButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>('#submit-author-button');
+
+const creationSuccessAlert: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#author-success-alert");
+const errorAlert: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#author-danger-alert");
 
 function createAuthorDTO(nameInput: HTMLInputElement, surnameInput: HTMLInputElement): CreateAuthorDTO {
     return {
@@ -9,58 +18,44 @@ function createAuthorDTO(nameInput: HTMLInputElement, surnameInput: HTMLInputEle
     } as CreateAuthorDTO;
 }
 
-async function saveAuthorDTO(authorDTO: CreateAuthorDTO): Promise<boolean> {
-    const authorService: AuthorServiceInterface = new AuthorService();
-    const savedAuthor: AuthorDTO | undefined = await authorService.Create(authorDTO);
-
-    return savedAuthor !== undefined;
-}
-
-function setUpAlerts(isSaved: boolean, successAlert: HTMLDivElement, dangerAlert: HTMLDivElement) {
-    successAlert.classList.toggle("d-none", !isSaved);
-    dangerAlert.classList.toggle("d-none", isSaved);
-}
-
-function validateIsInputCorrect(nameInput: HTMLInputElement, surnameInput: HTMLInputElement): boolean {
-    const isNameCorrect: boolean = nameInput.value.trim().length !== 0;
-    const isSurnameCorrect: boolean = surnameInput.value.trim().length !== 0;
-
-    nameInput.classList.toggle("is-invalid", !isNameCorrect);
-    surnameInput.classList.toggle("is-invalid", !isSurnameCorrect);
-
-    return isNameCorrect && isSurnameCorrect;
-}
-
 export async function init(): Promise<void> {
-    const nameInput: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#author-name-input');
-    const surnameInput: HTMLInputElement | null = document.querySelector<HTMLInputElement>('#author-surname-input');
-    const addButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>('#submit-author-button');
 
-    const successAlert: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#author-success-alert");
-    const dangerAlert: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#author-danger-alert");
-
-    if (nameInput === null || surnameInput === null || addButton === null || successAlert === null || dangerAlert === null) {
-        throw new Error("Not every element is needed!");
+    if (nameInput === null || surnameInput === null || createAuthorButton === null || creationSuccessAlert === null || errorAlert === null) {
+        throw new Error("Not every element is present!");
     }
 
-    addButton.addEventListener('click', async (): Promise<void> => {
-        const areInputsCorrect: boolean = validateIsInputCorrect(nameInput, surnameInput);
-
-        if (!areInputsCorrect) {
-            dangerAlert.classList.remove("d-none");
-            return;
-        }
-
-        const authorDto: CreateAuthorDTO = createAuthorDTO(nameInput, surnameInput);
-
-        const isSaved: boolean = await saveAuthorDTO(authorDto);
-
-        setUpAlerts(isSaved, successAlert, dangerAlert);
-
-        if (isSaved) {
+    const authorCreationSubject: AuthorCreationSubject = new AuthorCreationSubject()
+    const authorCreationObserver: AuthorCreationObserver = new AuthorCreationObserver((wasAuthorCreated: Boolean) => {
+        if (wasAuthorCreated) {
             nameInput.value = "";
             surnameInput.value = "";
         }
+        creationSuccessAlert.classList.toggle("d-none", !wasAuthorCreated);
+        errorAlert.classList.toggle("d-none", wasAuthorCreated.valueOf());
+    });
+    authorCreationSubject.attach(authorCreationObserver)
+
+    const inputValidSubject: InputValidSubject = new InputValidSubject();
+    const inputValidationObserver: InputValidObserver = new InputValidObserver((areInputsValid: Boolean) => {
+        if (!areInputsValid) {
+            errorAlert.classList.toggle("d-none", areInputsValid);
+        }
+    });
+    inputValidSubject.attach(inputValidationObserver);
+
+    createAuthorButton.addEventListener('click', async (): Promise<void> => {
+        const areInputsValid: boolean = inputValidSubject.areInputsValid([
+            surnameInput,
+            nameInput
+        ]);
+
+        if (!areInputsValid) {
+            return;
+        }
+
+        // Save Author
+        const authorDto: CreateAuthorDTO = createAuthorDTO(nameInput, surnameInput);
+        await authorCreationSubject.createAuthor(authorDto)
 
     });
 }
