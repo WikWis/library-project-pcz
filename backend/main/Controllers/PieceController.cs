@@ -18,25 +18,41 @@ namespace main.Controllers
         // GET /api/pieces
         // Zwraca:
         // - 200 OK: lista IList<PieceLookupDTO>
+        // - 400 BadRequest: niepoprawne parametry paginacji lub titleId
         [HttpGet]
         public IActionResult Index([FromQuery] int? titleId, [FromQuery] int page = 0, [FromQuery] int pageSize = 20)
         {
-            var pieceLookupDtos = titleId == null
-                ? pieceService.GetPieces(page, pageSize)
-                : pieceService.GetPiecesByTitle(page, pageSize, (int)titleId);
+            try
+            {
+                var pieceLookupDtos = titleId == null
+                    ? pieceService.GetPieces(page, pageSize)
+                    : pieceService.GetPiecesByTitle(page, pageSize, titleId.Value);
 
-            return Ok(pieceLookupDtos);
+                return Ok(pieceLookupDtos);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // GET /api/pieces/{pieceId}
         // Zwraca:
         // - 200 OK: obiekt PieceDTO
+        // - 400 BadRequest: niepoprawne pieceId (<= 0)
         // - 404 NotFound: brak obiektu (gdy ID nie istnieje w bazie)
         [HttpGet("{pieceId:int}")]
         public IActionResult Details(int pieceId)
         {
-            var pieceDto = pieceService.GetPiece(pieceId);
-            return pieceDto == null ? NotFound() : Ok(pieceDto);
+            try
+            {
+                var pieceDto = pieceService.GetPiece(pieceId);
+                return pieceDto == null ? NotFound($"Nie znaleziono egzemplarza o ID {pieceId}.") : Ok(pieceDto);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         // POST /api/pieces?titleId=1
@@ -44,16 +60,36 @@ namespace main.Controllers
         // - 201 Created: obiekt PieceDTO (oraz nagłówek Location: /api/pieces/{id})
         // - 400 BadRequest: brak obiektu lub brak poprawnego titleId
         // - 404 NotFound: brak wskazanego tytułu (gdy serwis zwróci 0)
+        // - 409 Conflict: błąd zapisu / naruszenie ograniczeń bazy
         [HttpPost]
         public IActionResult Create([FromQuery] int? titleId, [FromBody] CreatePieceDTO? createPieceDto)
         {
-            if (createPieceDto == null || titleId == null) return BadRequest();
+            if (createPieceDto == null) return BadRequest("Dane egzemplarza są wymagane.");
 
-            var id = pieceService.AddPiece((int)titleId, createPieceDto);
-            if (id == 0) return NotFound();
+            if (titleId.HasValue)
+                createPieceDto.TitleId = titleId.Value;
 
-            var piece = pieceService.GetPiece(id);
-            return Created("/api/pieces/" + id, piece);
+            try
+            {
+                var id = pieceService.AddPiece(createPieceDto.TitleId, createPieceDto);
+                if (id == 0)
+                    return NotFound($"Nie znaleziono tytułu o ID {createPieceDto.TitleId}.");
+
+                var piece = pieceService.GetPiece(id);
+                return Created($"/api/pieces/{id}", piece);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
 
         // PUT /api/pieces/{pieceId}
@@ -61,20 +97,34 @@ namespace main.Controllers
         // - 200 OK: zaktualizowany obiekt PieceDTO
         // - 400 BadRequest: brak obiektu (gdy pieceId to null lub createPieceDto to null)
         // - 404 NotFound: brak obiektu (gdy egzemplarz o danym pieceId nie istnieje)
+        // - 409 Conflict: konflikt stanu biznesowego (np. próba zmiany stanu na Free przy aktywnym wypożyczeniu)
         [HttpPut("{pieceId:int?}")]
-        public IActionResult Update(int? pieceId, [FromBody] CreatePieceDTO? createPieceDto)
+        public IActionResult Update(int? pieceId, [FromBody] UpdatePieceDTO? updatePieceDto)
         {
-            if (pieceId == null || createPieceDto == null) return BadRequest();
+            if (pieceId == null || updatePieceDto == null) return BadRequest("Id egzemplarza oraz dane aktualizacji są wymagane.");
 
-            var updateDto = new UpdatePieceDTO
+            try
             {
-                PieceId = (int)pieceId,
-                Status = createPieceDto.Status,
-                State = createPieceDto.State
-            };
+                updatePieceDto.PieceId = pieceId.Value;
+                var result = pieceService.UpdatePiece(updatePieceDto);
+                if (!result)
+                    return NotFound($"Nie znaleziono egzemplarza o Id {pieceId.Value}.");
 
-            var result = pieceService.UpdatePiece(updateDto);
-            return result ? Ok(pieceService.GetPiece((int)pieceId)) : NotFound();
+                var updatedPiece = pieceService.GetPiece(pieceId.Value);
+                return Ok(updatedPiece);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
 
         // DELETE /api/pieces/{pieceId}
@@ -82,13 +132,30 @@ namespace main.Controllers
         // - 204 NoContent: rekord pomyślnie usunięty
         // - 400 BadRequest: brak obiektu (gdy pieceId to null)
         // - 404 NotFound: rekord o danym ID nie istnieje
+        // - 409 Conflict: egzemplarz posiada historię wypożyczeń
         [HttpDelete("{pieceId:int?}")]
         public IActionResult Delete(int? pieceId)
         {
-            if (pieceId == null) return BadRequest();
-            var result = pieceService.DeletePiece((int)pieceId);
+            if (pieceId == null)
+                return BadRequest("Id egzemplarza jest wymagane.");
 
-            return result ? NoContent() : NotFound();
+            try
+            {
+                var result = pieceService.DeletePiece(pieceId.Value);
+                return result ? NoContent() : NotFound($"Nie znaleziono egzemplarza o ID {pieceId.Value}.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return Conflict(ex.Message);
+            }
         }
     }
 }

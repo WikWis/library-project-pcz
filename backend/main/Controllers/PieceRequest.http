@@ -19,7 +19,10 @@ GET http://localhost:5111/api/pieces?titleId=1&pageSize=2&page=0
 ### Pobierz szczegóły egzemplarza po ID
 GET http://localhost:5111/api/pieces/1
 
-### Dodaj egzemplarz - test  400 BadRequest
+### Test 404 NotFound - nieistniejący egzemplarz
+GET http://localhost:5111/api/pieces/999999
+
+### Dodaj egzemplarz - test 400 BadRequest
 POST http://localhost:5111/api/pieces?titleId=1
 
 ### Dodaj nowy egzemplarz dla tytułu (titleId = 1)
@@ -31,23 +34,14 @@ Content-Type: application/json
   "state": 0
 }
 
-### Dodaj nowy egzemplarz z nazwami enumów
-POST http://localhost:5111/api/pieces?titleId=1
-Content-Type: application/json
-
-{
-  "status": "Free",
-  "state": "Good"
-}
-
 ### Zaktualizuj egzemplarz
 PUT http://localhost:5111/api/pieces/1
 Content-Type: application/json
 
 {
-  "status": "Borrowed",
-  "state": "Damaged"
+  "status": 1,
+  "state": 1
 }
 
-### Usuń egzemplarz
+### Usuń egzemplarz (204 NoContent lub 409 Conflict, gdy ma historię wypożyczeń)
 DELETE http://localhost:5111/api/pieces/1
