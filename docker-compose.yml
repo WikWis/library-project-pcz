@@ -15,6 +15,9 @@ services:
       - "5111:8080"
     environment:
       ConnectionStrings__DefaultConnection: "Server=database;Database=AppDb;User Id=sa;Password=YourStrongPassword123!;TrustServerCertificate=True;"
+      Jwt__Issuer: "http://localhost:5111"
+      Jwt__Audience: "http://localhost:4321"
+      Jwt__Key: "ToJestBardzoTajnyKluczDoPodpisywaniaTokenowJwtMinimum32Znaki!"
     depends_on:
       - database
 

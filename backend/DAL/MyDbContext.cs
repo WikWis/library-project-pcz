@@ -21,6 +21,11 @@ namespace DAL
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Borrowing>()
+                .HasOne(b => b.User)
+                .WithMany(u => u.Borrowings)
+                .HasForeignKey(b => b.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

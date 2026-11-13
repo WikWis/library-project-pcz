@@ -1,0 +1,117 @@
+﻿@baseUrl = http://localhost:5111
+
+###Rejestracja nowego użytkownika (czytelnik)
+### Błędna rejestracja (puste żądanie - 400 Bad Request)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{}
+
+### Błędna rejestracja (zbyt słabe hasło - brak znaku specjalnego i cyfry)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "slabe.haslo@library.local",
+  "password": "haslo"
+}
+
+### Poprawna rejestracja nowego czytelnika (rola: reader)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "jan.kowalski@library.local",
+  "password": "Reader123!"
+}
+
+### Błędna rejestracja (duplikat adresu e-mail)
+POST {{baseUrl}}/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "jan.kowalski@library.local",
+  "password": "Reader123!"
+}
+
+
+###LOGOWANIE (Pobieranie tokena JWT)
+### Błędne logowanie (złe hasło - 401 Unauthorized)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "jan.kowalski@library.local",
+  "password": "ZleHaslo123!"
+}
+
+### Błędne logowanie (nieistniejący użytkownik - 401 Unauthorized)
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "nieistnieje@library.local",
+  "password": "Reader123!"
+}
+
+### Logowanie jako Reader (zapisuje token do zmiennej @token)
+# @name loginReader
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "jan.kowalski@library.local",
+  "password": "Reader123!"
+}
+
+### Logowanie jako Librarian (konto z seedera - zapisuje token do @librarianToken)
+# @name loginLibrarian
+POST {{baseUrl}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "librarian@library.local",
+  "password": "Librarian123!"
+}
+
+### test autoryzacji i ról
+### Próba dodania tytułu BEZ tokena (oczekiwane: 401 Unauthorized)
+POST {{baseUrl}}/api/titles
+Content-Type: application/json
+
+{
+  "name": "Test bez autoryzacji",
+  "dateOfPublishing": "2020-01-01",
+  "isbn": "9788375780635",
+  "genres": ["Fantasy"],
+  "authors": [{ "authorId": 1 }],
+  "publisher": { "publisherId": 1 }
+}
+
+### Próba dodania tytułu jako READER (oczekiwane: 403 Forbidden, jeśli endpoint ma [Authorize(Roles = "librarian")])
+POST {{baseUrl}}/api/titles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "Test jako czytelnik",
+  "dateOfPublishing": "2020-01-01",
+  "isbn": "9788375780635",
+  "genres": ["Fantasy"],
+  "authors": [{ "authorId": 1 }],
+  "publisher": { "publisherId": 1 }
+}
+
+### Dodanie tytułu jako LIBRARIAN (oczekiwane: 200 OK / 201 Created)
+POST {{baseUrl}}/api/titles
+Authorization: Bearer {{librarianToken}}
+Content-Type: application/json
+
+{
+  "name": "Wiedźmin: Miecz przeznaczenia",
+  "dateOfPublishing": "1992-01-01",
+  "isbn": "9788375780642",
+  "genres": ["Fantasy", "Przygoda"],
+  "authors": [{ "authorId": 1 }],
+  "publisher": { "publisherId": 1 }
+}
