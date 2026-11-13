@@ -12,7 +12,12 @@ public class AuthorService : BaseService, IAuthorService
     public AuthorService(IMapper mapper, MyDbContext dbContext) : base(mapper, dbContext)
     {
     }
-
+    
+    /// <summary>
+    /// Get detailed information about single author
+    /// </summary>
+    /// <param name="authorId">Author identifier used in database</param>
+    /// <returns>Information about author, including associated titles</returns>
     public AuthorDTO? GetAuthor(int authorId)
     {
         var author = _dbContext.Authors
@@ -21,6 +26,12 @@ public class AuthorService : BaseService, IAuthorService
         return _mapper.Map<AuthorDTO>(author);
     }
 
+    /// <summary>
+    /// Get information about every author. Uses pagination.
+    /// </summary>
+    /// <param name="page">Chosen page number. Starts with 0.</param>
+    /// <param name="pageSize">Page size.</param>
+    /// <returns>Information about authors. Amount of entries is equal to pageSize.</returns>
     public IList<AuthorLookupDTO> GetAuthors(int page, int pageSize)
     {
         var pageBegin = page * pageSize;
@@ -33,6 +44,13 @@ public class AuthorService : BaseService, IAuthorService
         return _mapper.Map<IList<AuthorLookupDTO>>(authors);
     }
 
+    /// <summary>
+    /// Get information about every author associated to chosen title. Uses pagination.
+    /// </summary>
+    /// <param name="page">Chosen page number. Starts with 0.</param>
+    /// <param name="pageSize">Page size.</param>
+    /// <param name="titleId">Title identifier used in database.</param>
+    /// <returns>Information about authors. Amount of entries is equal to pageSize.</returns>
     public IList<AuthorLookupDTO> GetAuthorsByTitle(int page, int pageSize, int titleId)
     {
         var title = _dbContext.Titles
@@ -45,6 +63,11 @@ public class AuthorService : BaseService, IAuthorService
         return _mapper.Map<List<AuthorLookupDTO>>(title.Authors.Skip(pageBegin).Take(pageSize));
     }
 
+    /// <summary>
+    /// Create new entry of author in database.
+    /// </summary>
+    /// <param name="createAuthorDto">New authors data.</param>
+    /// <returns>Identifier of newly created entry.</returns>
     public int AddAuthor(CreateAuthorDTO createAuthorDto)
     {
         var author = _mapper.Map<Author>(createAuthorDto);
@@ -52,7 +75,12 @@ public class AuthorService : BaseService, IAuthorService
         _dbContext.SaveChanges();
         return author.AuthorId;
     }
-
+    
+    /// <summary>
+    /// Update information about chosen author.
+    /// </summary>
+    /// <param name="updateAuthorDto">Modified author data.</param>
+    /// <returns>Information if operation succeeded</returns>
     public bool UpdateAuthor(UpdateAuthorDTO updateAuthorDto)
     {
         var author = _dbContext.Authors.FirstOrDefault(a => a.AuthorId == updateAuthorDto.AuthorId);
@@ -64,6 +92,11 @@ public class AuthorService : BaseService, IAuthorService
         return true;
     }
 
+    /// <summary>
+    /// Delete entry of chosen author.
+    /// </summary>
+    /// <param name="authorId">Author identifier used in database</param>>
+    /// <returns>Information if operation succeeded</returns>
     public bool DeleteAuthor(int authorId)
     { 
         var author = _dbContext.Authors
