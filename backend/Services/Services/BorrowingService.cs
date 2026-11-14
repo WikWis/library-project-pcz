@@ -14,6 +14,13 @@ public class BorrowingService : BaseService, IBorrowingService
     {
     }
 
+    /// <summary>
+    /// Get information about every borrowing of chosen user. Uses pagination.
+    /// </summary>
+    /// <param name="page">Chosen page number. Starts with 0.</param>
+    /// <param name="pageSize">Page size.</param>
+    /// <param name="userId">User identifier used in database.</param>
+    /// <returns>Information about borrowings. Amount of entries is equal to pageSize.</returns>
     public IList<BorrowingDTO> GetBorrowingsByUser(int page, int pageSize, string userId)
     {
         var pageBegin = page * pageSize;
@@ -26,6 +33,11 @@ public class BorrowingService : BaseService, IBorrowingService
         return  _mapper.Map<IList<BorrowingDTO>>(borrowings);
     }
 
+    /// <summary>
+    /// Create new entry of borrowing in database.
+    /// </summary>
+    /// <param name="createBorrowingDto">New borrowing data.</param>
+    /// <returns>Identifier of newly created entry.</returns>
     public BorrowingDTO? AddBorrowing(CreateBorrowingDTO createBorrowingDto)
     {
         if (!_dbContext.Users.Any(u => u.Id == createBorrowingDto.UserId))
@@ -41,6 +53,11 @@ public class BorrowingService : BaseService, IBorrowingService
         return _mapper.Map<BorrowingDTO>(borrowing);
     }
 
+    /// <summary>
+    /// Update information about chosen borrowing.
+    /// </summary>
+    /// <param name="updateBorrowingDto">Modified borrowing data.</param>
+    /// <returns>Information if operation succeeded</returns>
     public BorrowingDTO? UpdateBorrowing(UpdateBorrowingDTO updateBorrowingDto)
     {
         var borrowing = _dbContext.Borrowings
@@ -55,6 +72,11 @@ public class BorrowingService : BaseService, IBorrowingService
         return _mapper.Map<BorrowingDTO>(borrowing);
     }
 
+    /// <summary>
+    /// Delete entry of chosen borrowing.
+    /// </summary>
+    /// <param name="borrowingId">Borrowing identifier used in database</param>
+    /// <returns>Information if operation succeeded</returns>
     public bool DeleteBorrowing(int borrowingId)
     {
         var borrowing = _dbContext.Borrowings
@@ -66,7 +88,14 @@ public class BorrowingService : BaseService, IBorrowingService
         return true; 
     }
 
-    bool CanBorrowDuring(int pieceId, DateOnly startDate, DateOnly endDate)
+    /// <summary>
+    /// Checks if chosen piece is available during chosen period.
+    /// </summary>
+    /// <param name="pieceId">Piece identifier used in database.</param>
+    /// <param name="startDate">Beginning of chosen period</param>
+    /// <param name="endDate">End of chosen period</param>
+    /// <returns>returns if is available</returns>
+    private bool CanBorrowDuring(int pieceId, DateOnly startDate, DateOnly endDate)
     {
         if(startDate >= endDate) return false;
 

@@ -14,6 +14,16 @@ public class BorrowingController : Controller
         _borrowingService = borrowingService;
     }
 
+    /// <summary>
+    /// Get information about borrowings of chosen user. Uses pagination.
+    /// </summary>
+    /// <param name="userId">Query parameter containing user identifier used in database.</param>
+    /// <param name="page">Query parameter containing chosen page number. Defaults to 0.</param>
+    /// <param name="pageSize">Query parameter containing page size. Defaults to 20.</param>
+    /// <returns>
+    /// Unless titleId is provided, returns list of all authors (200 OK),
+    /// otherwise returns "bad request" (400 Bad Request).
+    /// </returns>
     [HttpGet]
     public IActionResult Index([FromQuery] int page = 0, [FromQuery] int pageSize = 20, [FromQuery] string? userId = null)
     {
@@ -23,6 +33,14 @@ public class BorrowingController : Controller
         return Ok(borrowings);
     }
     
+    /// <summary>
+    /// Create new entry of borrowing in database.
+    /// </summary>
+    /// <param name="createBorrowingDto">New borrowing data.</param>
+    /// <returns>
+    /// If createBorrowingDto is correct, returns "created" (201 Created) with URL to new resource (Location response header) and newly created resource itself (JSON in response body),
+    /// otherwise returns "bad request" (400 Bad Request).
+    /// </returns>
     [HttpPost]
     public IActionResult Create([FromBody] CreateBorrowingDTO? createBorrowingDto)
     {
@@ -37,6 +55,17 @@ public class BorrowingController : Controller
             return Conflict(ex.Message);
         }
     }
+    
+    /// <summary>
+    /// Update information about chosen borrowing.
+    /// </summary>
+    /// <param name="borrowingId">Borrowing identifier used in database.</param>
+    /// <param name="updateBorrowingDto">Modified borrowing data.</param>
+    /// <returns>
+    /// If borrowingId is missing or updateBorrowingDto is incorrect, returns "bad request" (400 Bad Request),
+    /// otherwise if succeeds, returns updated borrowing information (200 OK),
+    /// otherwise returns "not found" (404 Not Found).
+    /// </returns>
     [HttpPut("{borrowingId:int?}")]
     public IActionResult Update(int? borrowingId, [FromBody] UpdateBorrowingDTO? updateBorrowingDto)
     {
@@ -52,6 +81,17 @@ public class BorrowingController : Controller
             return Conflict(ex.Message);
         }
     }
+
+    /// <summary>
+    /// Delete entry of chosen borrowing.
+    /// </summary>
+    /// <param name="borrowingId">Borrowing identifier used in database.</param>
+    /// <returns>
+    /// If borrowingId is missing, returns "bad request" (400 Bad Request),
+    /// otherwise if operation is currently invalid, returns "conflict" (409 Conflict),
+    /// otherwise if succeeds, returns "no content" (204 NoContent),
+    /// otherwise returns "not found" (404 Not Found).
+    /// </returns>
     [HttpDelete("{borrowingId:int?}")]
     public IActionResult Delete(int? borrowingId)
     {

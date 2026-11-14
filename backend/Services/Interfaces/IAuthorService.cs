@@ -45,7 +45,7 @@ public interface IAuthorService
     /// <summary>
     /// Delete entry of chosen author.
     /// </summary>
-    /// <param name="authorId">Author identifier used in database</param>>
+    /// <param name="authorId">Author identifier used in database</param>
     /// <returns>Information if operation succeeded</returns>
     bool DeleteAuthor(int authorId);
 }
