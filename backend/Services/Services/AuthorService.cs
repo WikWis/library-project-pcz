@@ -66,7 +66,7 @@ public class AuthorService : BaseService, IAuthorService
     /// <summary>
     /// Create new entry of author in database.
     /// </summary>
-    /// <param name="createAuthorDto">New authors data.</param>
+    /// <param name="createAuthorDto">New author data.</param>
     /// <returns>Identifier of newly created entry.</returns>
     public int AddAuthor(CreateAuthorDTO createAuthorDto)
     {

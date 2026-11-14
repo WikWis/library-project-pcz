@@ -31,14 +31,14 @@ public interface IAuthorService
     /// <summary>
     /// Create new entry of author in database.
     /// </summary>
-    /// <param name="createAuthorDto">New authors data.</param>
+    /// <param name="createAuthorDto">New author data.</param>
     /// <returns>Identifier of newly created entry.</returns>
     int AddAuthor(CreateAuthorDTO createAuthorDto);
     
     /// <summary>
     /// Update information about chosen author.
     /// </summary>
-    /// <param name="updateAuthorDto">Modified authors data.</param>
+    /// <param name="updateAuthorDto">Modified author data.</param>
     /// <returns>Information if operation succeeded</returns>
     bool UpdateAuthor(UpdateAuthorDTO updateAuthorDto);
 

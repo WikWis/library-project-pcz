@@ -52,7 +52,7 @@ public class AuthorController : Controller
     /// <summary>
     /// Create new entry of author in database.
     /// </summary>
-    /// <param name="createAuthorDto">New authors data.</param>
+    /// <param name="createAuthorDto">New author data.</param>
     /// <returns>
     /// If createAuthorDto is correct, returns "created" (201 Created) with URL to new resource (Location response header) and newly created resource itself (JSON in response body),
     /// otherwise returns "bad request" (400 Bad Request).

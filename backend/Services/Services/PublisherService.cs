@@ -13,12 +13,23 @@ public class PublisherService : BaseService, IPublisherService
     {
     }
 
+    /// <summary>
+    /// Get detailed information about single publisher
+    /// </summary>
+    /// <param name="publisherId">Publisher identifier used in database</param>
+    /// <returns>Information about publisher, including associated titles</returns>
     public PublisherDTO? GetPublisher(int publisherId)
     {
         var publisher = _dbContext.Publishers.Find(publisherId);
         return _mapper.Map<PublisherDTO>(publisher);
     }
 
+    /// <summary>
+    /// Get information about every publisher. Uses pagination.
+    /// </summary>
+    /// <param name="page">Chosen page number. Starts with 0.</param>
+    /// <param name="pageSize">Page size.</param>
+    /// <returns>Information about publisher. Amount of entries is equal to pageSize.</returns>
     public IList<PublisherLookupDTO> GetPublishers(int page, int pageSize)
     {
         var pageBegin = page * pageSize;
@@ -31,6 +42,11 @@ public class PublisherService : BaseService, IPublisherService
         return _mapper.Map<IList<PublisherLookupDTO>>(authors);
     }
 
+    /// <summary>
+    /// Create new entry of publisher in database.
+    /// </summary>
+    /// <param name="createPublisherDto">New publisher data.</param>
+    /// <returns>Identifier of newly created entry.</returns>
     public int AddPublisher(CreatePublisherDTO createPublisherDto)
     {
         var publisher = _mapper.Map<Publisher>(createPublisherDto);
@@ -39,6 +55,11 @@ public class PublisherService : BaseService, IPublisherService
         return publisher.PublisherId;
     }
 
+    /// <summary>
+    /// Update information about chosen publisher.
+    /// </summary>
+    /// <param name="updatePublisherDto">Modified publisher data.</param>
+    /// <returns>Information if operation succeeded</returns>
     public bool UpdatePublisher(UpdatePublisherDTO updatePublisherDto)
     {
         var publisher = _dbContext.Publishers.FirstOrDefault(a => a.PublisherId == updatePublisherDto.PublisherId);
@@ -49,6 +70,11 @@ public class PublisherService : BaseService, IPublisherService
         return true;
     }
 
+    /// <summary>
+    /// Delete entry of chosen publisher.
+    /// </summary>
+    /// <param name="publisherId">Publisher identifier used in database</param>>
+    /// <returns>Information if operation succeeded</returns>
     public bool DeletePublisher(int publisherId)
     {
         var publisher = _dbContext.Publishers
