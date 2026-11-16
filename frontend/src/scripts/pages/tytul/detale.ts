@@ -16,6 +16,8 @@ const titleGenresDiv = document.querySelector<HTMLDivElement>("#title-genres")
 const titleAuthorsDiv = document.querySelector<HTMLDivElement>("#title-authors")
 const titlePublisherDiv = document.querySelector<HTMLDivElement>("#title-publisher")
 
+const editButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#edit-button")
+
 const titleService: TitleServiceInterface = new TitleService();
 
 function setUpAstroElements(titleDto: TitleDTO) {
@@ -26,6 +28,7 @@ function setUpAstroElements(titleDto: TitleDTO) {
     titleGenresDiv!.innerHTML = renderGenres(titleDto.genres)
     titleAuthorsDiv!.innerHTML = renderAuthors(titleDto.authors)
     titlePublisherDiv!.innerHTML = renderPublisher(titleDto.publisher)
+    editButton!.href = `/tytul/edytuj?id=${titleDto.titleId.toString()}`
 }
 
 export async function init() {

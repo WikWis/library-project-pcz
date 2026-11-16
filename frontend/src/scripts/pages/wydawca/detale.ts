@@ -23,11 +23,14 @@ const publisherTitlesList = document.querySelector<HTMLDivElement>("#publisher-t
 const previousButton = document.querySelector<HTMLButtonElement>("#previous-button");
 const nextButton = document.querySelector<HTMLButtonElement>("#next-button");
 
+const editButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#edit-button")
+
 const publisherService: PublisherServiceInterface = new PublisherService();
 
 function setUpAstroElements(publisher: PublisherDTO) {
     publisherIdDiv!.innerText = publisher.publisherId.toString()
     publisherNameDiv!.innerText = publisher.name;
+    editButton!.href = `/wydawca/edytuj?id=${publisher.publisherId.toString()}`
 }
 
 // For now renders every book, there is no endpoint for titles published by specific publisher

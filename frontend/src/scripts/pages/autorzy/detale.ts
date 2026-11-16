@@ -24,11 +24,14 @@ const authorTitlesList: HTMLDivElement | null = document.querySelector<HTMLDivEl
 const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#previous-button")
 const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
 
+const editButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#edit-button")
+
 function setUpAstroElements(authorDto: AuthorDTO) {
     authorIdDiv!.innerText = authorDto.authorId.toString()
     authorNameDiv!.innerText = authorDto.name;
     authorSurnameDiv!.innerText = authorDto.surname;
     authorSurnameDiv!.innerText = authorDto.surname;
+    editButton!.href = `/autorzy/edytuj?id=${authorDto.authorId.toString()}`
 }
 
 export async function init() {

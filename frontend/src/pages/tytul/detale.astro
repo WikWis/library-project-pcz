@@ -10,7 +10,7 @@ import TitleDetails from "../../components/title/TitleDetails.astro";
     <div class="container">
 
         <div id="not-found-message" class="row" hidden>
-            <h1>Nie znaleziono autora!</h1>
+            <h1>Nie znaleziono Tytułu!</h1>
         </div>
 
         <div id="content">
@@ -19,6 +19,12 @@ import TitleDetails from "../../components/title/TitleDetails.astro";
                 <TitleDetails/>
             </div>
 
+        </div>
+
+        <div class="row ">
+            <div class="col mt-3">
+                <a id="edit-button"  class="btn btn-success" href="/tytul/edytuj?id=1">Edytuj Autora</a>
+            </div>
         </div>
 
     </div>
