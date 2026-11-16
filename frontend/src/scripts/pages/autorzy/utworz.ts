@@ -43,7 +43,7 @@ export async function init(): Promise<void> {
     });
     inputValidSubject.attach(inputValidationObserver);
 
-    createAuthorButton.click = async (): Promise<void> => {
+    createAuthorButton.onclick = async (): Promise<void> => {
         const areInputsValid: boolean = inputValidSubject.areInputsValid([
             surnameInput,
             nameInput
