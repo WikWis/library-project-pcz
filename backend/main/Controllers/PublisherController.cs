@@ -1,4 +1,5 @@
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using services.DTOs.PublisherDTOs;
 using Services.Interfaces;
@@ -56,6 +57,7 @@ public class PublisherController : Controller
     /// otherwise returns "bad request" (400 Bad Request).
     /// </returns>
     [HttpPost]
+    [Authorize(Roles = "librarian")]
     public IActionResult Create([FromBody] CreatePublisherDTO? createPublisherDto)
     {
         if (createPublisherDto == null) return BadRequest();
@@ -75,6 +77,7 @@ public class PublisherController : Controller
     /// otherwise returns "not found" (404 Not Found).
     /// </returns>
     [HttpPut("{publisherId:int?}")]
+    [Authorize(Roles = "librarian")]
     public IActionResult Update(int? publisherId, [FromBody] CreatePublisherDTO? updatePublisherDto)
     {
         if (publisherId == null || updatePublisherDto == null) return BadRequest();
@@ -98,6 +101,7 @@ public class PublisherController : Controller
     /// otherwise returns "not found" (404 Not Found).
     /// </returns>
     [HttpDelete("{publisherId:int?}")]
+    [Authorize(Roles = "librarian")]
     public IActionResult Delete(int? publisherId)
     {
         if (publisherId == null) return BadRequest();

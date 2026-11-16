@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using services.DTOs.BorrowingDTOs;
 using Services.Interfaces;
@@ -42,11 +44,13 @@ public class BorrowingController : Controller
     /// otherwise returns "bad request" (400 Bad Request).
     /// </returns>
     [HttpPost]
+    [Authorize(Roles = "reader")]
     public IActionResult Create([FromBody] CreateBorrowingDTO? createBorrowingDto)
     {
         if (createBorrowingDto == null) return BadRequest();
         try
         {
+            createBorrowingDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var borrowingDto = _borrowingService.AddBorrowing(createBorrowingDto);
             return Created("/api/borrowings/" + borrowingDto?.BorrowingId, borrowingDto);
         }

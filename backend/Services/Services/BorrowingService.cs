@@ -25,6 +25,7 @@ public class BorrowingService : BaseService, IBorrowingService
     {
         var pageBegin = page * pageSize;
         var borrowings = _dbContext.Borrowings
+            .Include(b => b.Piece)
             .Where(b => b.UserId == userId)
             .Skip(pageBegin)
             .Take(pageSize)
@@ -42,9 +43,14 @@ public class BorrowingService : BaseService, IBorrowingService
     {
         if (!_dbContext.Users.Any(u => u.Id == createBorrowingDto.UserId))
             throw new InvalidOperationException("User not found");
-        if(!_dbContext.Pieces.Any(p => p.PieceId == createBorrowingDto.PieceId))
+        
+        var piece = _dbContext.Pieces.FirstOrDefault(p => p.PieceId == createBorrowingDto.PieceId);
+        if (piece == null)
             throw new InvalidOperationException("Piece not found");
-        if(CanBorrowDuring(createBorrowingDto.PieceId, createBorrowingDto.StartDate, createBorrowingDto.EndDate))
+        if (piece.State == PieceState.Unusable)
+            throw new  InvalidOperationException("Piece in unusable state");
+
+        if(CanBeBorrowedDuring(createBorrowingDto.PieceId, createBorrowingDto.StartDate, createBorrowingDto.EndDate))
             throw new InvalidOperationException("Piece already borrowed during this time");
         
         var borrowing = _mapper.Map<Borrowing>(createBorrowingDto);
@@ -61,9 +67,10 @@ public class BorrowingService : BaseService, IBorrowingService
     public BorrowingDTO? UpdateBorrowing(UpdateBorrowingDTO updateBorrowingDto)
     {
         var borrowing = _dbContext.Borrowings
+            .Include(b => b.Piece).ThenInclude(p => p.Title)
             .FirstOrDefault(a => a.BorrowingId == updateBorrowingDto.BorrowingId);
         if (borrowing == null) return null;
-        if (CanBorrowDuring(borrowing.PieceId, updateBorrowingDto.StartDate, updateBorrowingDto.EndDate))
+        if (CanBeBorrowedDuring(borrowing.PieceId, updateBorrowingDto.StartDate, updateBorrowingDto.EndDate))
             throw new InvalidOperationException("Piece already borrowed during this time");
 
         borrowing.StartDate = updateBorrowingDto.StartDate;
@@ -87,7 +94,7 @@ public class BorrowingService : BaseService, IBorrowingService
         _dbContext.SaveChanges();
         return true; 
     }
-
+    
     /// <summary>
     /// Checks if chosen piece is available during chosen period.
     /// </summary>
@@ -95,7 +102,7 @@ public class BorrowingService : BaseService, IBorrowingService
     /// <param name="startDate">Beginning of chosen period</param>
     /// <param name="endDate">End of chosen period</param>
     /// <returns>returns if is available</returns>
-    private bool CanBorrowDuring(int pieceId, DateOnly startDate, DateOnly endDate)
+    private bool CanBeBorrowedDuring(int pieceId, DateOnly startDate, DateOnly endDate)
     {
         if(startDate >= endDate) return false;
 

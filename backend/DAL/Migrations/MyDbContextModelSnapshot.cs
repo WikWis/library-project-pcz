@@ -437,7 +437,7 @@ namespace DAL.Migrations
                     b.HasOne("Model.User", "User")
                         .WithMany("Borrowings")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Piece");

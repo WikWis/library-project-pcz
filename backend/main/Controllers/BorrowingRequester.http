@@ -1,13 +1,13 @@
 ### Zawiera zaimplementowaną paginację
-GET http://localhost:5111/api/borrowings?userId=1a2b3c4d5e
+GET http://localhost:5111/api/borrowings?userId=02336e1f-644d-4013-8c51-dbc8c148abcd
 
 ###
 POST http://localhost:5111/api/borrowings
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAyMzM2ZTFmLTY0NGQtNDAxMy04YzUxLWRiYzhjMTQ4YWJjZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imphbi5rb3dhbHNraUBsaWJyYXJ5LmxvY2FsIiwianRpIjoiMmVlNDIwOGItMjJmMC00MDYwLTk1YzctYTJiMjM0ZjIwOWJjIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoicmVhZGVyIiwiZXhwIjoxNzk0ODM0NjkwLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxMTEiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQzMjEifQ.ISqUDPbQQQYXzpbW_mpG0Zvq13EJIDoEPqgqSdK0r4k
 
 {
   "pieceId": 1,
-  "userId": "1a2b3c4d5e",
   "startDate": "2026-11-01",
   "endDate": "2026-12-01"
 }

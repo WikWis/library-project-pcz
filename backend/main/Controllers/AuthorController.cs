@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using services.DTOs.AuthorDTOs;
 using Services.Interfaces;
@@ -58,6 +59,7 @@ public class AuthorController : Controller
     /// otherwise returns "bad request" (400 Bad Request).
     /// </returns>
     [HttpPost]
+    [Authorize(Roles = "librarian")]
     public IActionResult Create([FromBody] CreateAuthorDTO? createAuthorDto)
     {
         if (createAuthorDto == null) return BadRequest();
@@ -77,6 +79,7 @@ public class AuthorController : Controller
     /// otherwise returns "not found" (404 Not Found).
     /// </returns>
     [HttpPut("{authorId:int?}")]
+    [Authorize(Roles = "librarian")]
     public IActionResult Update(int? authorId, [FromBody] CreateAuthorDTO? updateAuthorDto)
     {
         if (authorId == null || updateAuthorDto == null) return BadRequest();
@@ -101,6 +104,7 @@ public class AuthorController : Controller
     /// otherwise returns "not found" (404 Not Found).
     /// </returns>
     [HttpDelete("{authorId:int?}")]
+    [Authorize(Roles = "librarian")]
     public IActionResult Delete(int? authorId)
     {
         if (authorId == null) return BadRequest();
