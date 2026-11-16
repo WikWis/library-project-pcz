@@ -24,6 +24,10 @@ const previousButton = document.querySelector<HTMLButtonElement>("#previous-butt
 const nextButton = document.querySelector<HTMLButtonElement>("#next-button");
 
 const editButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#edit-button")
+const confirmRemoveButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#confirmRemoveButton")
+
+// When not created
+const errorAlert: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#publisher-danger-alert");
 
 const publisherService: PublisherServiceInterface = new PublisherService();
 
@@ -56,7 +60,7 @@ export async function init(): Promise<void> {
     const id: Number = Number.parseInt(pathId ?? "0")
     const publisherDto: PublisherDTO | undefined = await publisherService.Details(id)
 
-    if (id === 0 || isNaN(id.valueOf()) || publisherDto === undefined || publisherTitlesList === null || previousButton === null || nextButton === null) {
+    if (id === 0 || isNaN(id.valueOf()) || publisherDto === undefined || publisherTitlesList === null || previousButton === null || nextButton === null || confirmRemoveButton === null || errorAlert === null) {
         notFoundMessageDiv!.hidden = false;
         contentDiv!.hidden = true;
         return;
@@ -66,4 +70,14 @@ export async function init(): Promise<void> {
 
     const pageSwitcher: PageSwitcher<TitleLookupDTO> = new PageSwitcher<TitleLookupDTO>(pageDataProvider, pageRenderer, publisherTitlesList)
     await setupPagination(pageSwitcher, previousButton, nextButton);
+
+    confirmRemoveButton.onclick = async () => {
+        const isSaved: Boolean = await publisherService.Delete(publisherDto.publisherId);
+        if (!isSaved) {
+            errorAlert.classList.toggle("d-none", isSaved);
+            return;
+        }
+
+        window.location.href = "/wydawca";
+    }
 }
