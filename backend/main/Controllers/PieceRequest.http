@@ -30,7 +30,6 @@ POST http://localhost:5111/api/pieces?titleId=1
 Content-Type: application/json
 
 {
-  "status": 0,
   "state": 0
 }
 
@@ -39,7 +38,6 @@ PUT http://localhost:5111/api/pieces/1
 Content-Type: application/json
 
 {
-  "status": 1,
   "state": 1
 }
 

@@ -10,10 +10,7 @@ namespace Services.DTOs.PieceDTOs
     {
         
         public int PieceId { get; set; }
-
-        [EnumDataType(typeof(PieceStatus), ErrorMessage = "Nieprawidłowy status egzemplarza.")]
-        public PieceStatus Status { get; set; }
-
+        
         [EnumDataType(typeof(PieceState), ErrorMessage = "Nieprawidłowy stan egzemplarza.")]
         public PieceState State { get; set; }
     }

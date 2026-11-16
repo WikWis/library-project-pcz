@@ -4,15 +4,6 @@ using System.Text;
 
 namespace Model
 {
-    public enum PieceStatus
-    {
-        Free,
-        Reserved,
-        Borrowed,
-        InRepair,
-        Archived
-    }
-
     public enum PieceState
     {
         Good,
@@ -24,7 +15,6 @@ namespace Model
     {
         public int PieceId { get; set; }
         public virtual Title? Title { get; set; }
-        public PieceStatus Status { get; set; } = PieceStatus.Free;
         public PieceState State { get; set; } = PieceState.Good;
         public virtual ICollection<Borrowing> BorrowingHistory { get; set; } = [];
     }

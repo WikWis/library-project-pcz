@@ -4,13 +4,22 @@ using System.Text;
 
 namespace Model
 {
+    public enum BorrowingStatus
+    {
+        Reserved,
+        Borrowed,
+        InRepair,
+        Cancelled,
+        Archived,
+        Returned
+    }
     public class Borrowing
     {
         public int BorrowingId { get; set; }
 
         public DateOnly StartDate { get; set; }
-        public DateOnly EndDate { get; set; }
-
+        public DateOnly? EndDate { get; set; }
+        public BorrowingStatus Status { get; set; }
         public string UserId { get; set; } = string.Empty;
         public virtual User? User { get; set; }
 

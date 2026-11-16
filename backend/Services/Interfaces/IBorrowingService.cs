@@ -1,3 +1,4 @@
+using Model;
 using services.DTOs.BorrowingDTOs;
 
 namespace Services.Interfaces;
@@ -14,19 +15,29 @@ public interface IBorrowingService
     IList<BorrowingDTO> GetBorrowingsByUser(int page, int pageSize, string userId);
     
     /// <summary>
+    /// Get information about every borrowing having chosen status. Uses pagination.
+    /// </summary>
+    /// <param name="page">Chosen page number. Starts with 0.</param>
+    /// <param name="pageSize">Page size.</param>
+    /// <param name="status">Chosen status of borrowing.</param>
+    /// <returns>Information about borrowings. Amount of entries is equal to pageSize.</returns>
+    IList<BorrowingDTO> GetBorrowingsByStatus(int page, int pageSize, BorrowingStatus status);
+    
+    /// <summary>
     /// Create new entry of borrowing in database.
     /// </summary>
-    /// <param name="createBorrowingDto">New borrowing data.</param>
+    /// <param name="reserveBorrowingDto">New borrowing data.</param>
     /// <returns>Identifier of newly created entry.</returns>
-    BorrowingDTO? AddBorrowing(CreateBorrowingDTO createBorrowingDto);
-  
+    BorrowingDTO? ReserveBorrowing(ReserveBorrowingDTO reserveBorrowingDto);
+
     /// <summary>
-    /// Update information about chosen borrowing.
+    /// Change status of chosen borrowing.
     /// </summary>
-    /// <param name="updateBorrowingDto">Modified borrowing data.</param>
-    /// <returns>Information if operation succeeded</returns>
-    BorrowingDTO? UpdateBorrowing(UpdateBorrowingDTO updateBorrowingDto);
-   
+    /// <param name="borrowingId">Borrowing identifier used in database</param>
+    /// <param name="status">New borrowing status</param>
+    /// <returns>Identifier of updated created entry.</returns>
+    BorrowingDTO? ChangeBorrowingStatus(int  borrowingId, BorrowingStatus status);
+
     /// <summary>
     /// Delete entry of chosen borrowing.
     /// </summary>

@@ -34,49 +34,26 @@ public class BorrowingService : BaseService, IBorrowingService
         return  _mapper.Map<IList<BorrowingDTO>>(borrowings);
     }
 
-    /// <summary>
-    /// Create new entry of borrowing in database.
-    /// </summary>
-    /// <param name="createBorrowingDto">New borrowing data.</param>
-    /// <returns>Identifier of newly created entry.</returns>
-    public BorrowingDTO? AddBorrowing(CreateBorrowingDTO createBorrowingDto)
+    public IList<BorrowingDTO> GetBorrowingsByStatus(int page, int pageSize, BorrowingStatus status)
     {
-        if (!_dbContext.Users.Any(u => u.Id == createBorrowingDto.UserId))
-            throw new InvalidOperationException("User not found");
-        
-        var piece = _dbContext.Pieces.FirstOrDefault(p => p.PieceId == createBorrowingDto.PieceId);
-        if (piece == null)
-            throw new InvalidOperationException("Piece not found");
-        if (piece.State == PieceState.Unusable)
-            throw new  InvalidOperationException("Piece in unusable state");
+        var pageBegin = page * pageSize;
+        var borrowings = _dbContext.Borrowings
+            .Include(b => b.Piece)
+            .Where(b => b.Status == status)
+            .Skip(pageBegin)
+            .Take(pageSize)
+            .OrderBy(b => b.BorrowingId)
+            .ToList();
+        return  _mapper.Map<IList<BorrowingDTO>>(borrowings);    }
 
-        if(CanBeBorrowedDuring(createBorrowingDto.PieceId, createBorrowingDto.StartDate, createBorrowingDto.EndDate))
-            throw new InvalidOperationException("Piece already borrowed during this time");
-        
-        var borrowing = _mapper.Map<Borrowing>(createBorrowingDto);
-        _dbContext.Borrowings.Add(borrowing);
-        _dbContext.SaveChanges();
-        return _mapper.Map<BorrowingDTO>(borrowing);
+    public BorrowingDTO? ReserveBorrowing(ReserveBorrowingDTO reserveBorrowingDto)
+    {
+        throw new NotImplementedException();
     }
 
-    /// <summary>
-    /// Update information about chosen borrowing.
-    /// </summary>
-    /// <param name="updateBorrowingDto">Modified borrowing data.</param>
-    /// <returns>Information if operation succeeded</returns>
-    public BorrowingDTO? UpdateBorrowing(UpdateBorrowingDTO updateBorrowingDto)
+    public BorrowingDTO? ChangeBorrowingStatus(int borrowingId, BorrowingStatus status)
     {
-        var borrowing = _dbContext.Borrowings
-            .Include(b => b.Piece).ThenInclude(p => p.Title)
-            .FirstOrDefault(a => a.BorrowingId == updateBorrowingDto.BorrowingId);
-        if (borrowing == null) return null;
-        if (CanBeBorrowedDuring(borrowing.PieceId, updateBorrowingDto.StartDate, updateBorrowingDto.EndDate))
-            throw new InvalidOperationException("Piece already borrowed during this time");
-
-        borrowing.StartDate = updateBorrowingDto.StartDate;
-        borrowing.EndDate = updateBorrowingDto.EndDate;
-        _dbContext.SaveChanges();
-        return _mapper.Map<BorrowingDTO>(borrowing);
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -93,21 +70,5 @@ public class BorrowingService : BaseService, IBorrowingService
         _dbContext.Borrowings.Remove(borrowing);
         _dbContext.SaveChanges();
         return true; 
-    }
-    
-    /// <summary>
-    /// Checks if chosen piece is available during chosen period.
-    /// </summary>
-    /// <param name="pieceId">Piece identifier used in database.</param>
-    /// <param name="startDate">Beginning of chosen period</param>
-    /// <param name="endDate">End of chosen period</param>
-    /// <returns>returns if is available</returns>
-    private bool CanBeBorrowedDuring(int pieceId, DateOnly startDate, DateOnly endDate)
-    {
-        if(startDate >= endDate) return false;
-
-        return _dbContext.Borrowings
-            .Where(b => b.PieceId == pieceId)
-            .Any(b => b.StartDate > endDate || b.EndDate < startDate);
     }
 }

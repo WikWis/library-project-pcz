@@ -12,7 +12,7 @@ namespace Services.Mapping
         public BorrowingProfile()
         {
             CreateMap<Borrowing, BorrowingDTO>();
-            CreateMap<CreateBorrowingDTO, Borrowing>()
+            CreateMap<ReserveBorrowingDTO, Borrowing>()
                 .ForMember(d => d.BorrowingId, o => o.Ignore())
                 .ForMember(d=>d.User, o => o.Ignore())
                 .ForMember(d => d.Piece, o => o.Ignore());

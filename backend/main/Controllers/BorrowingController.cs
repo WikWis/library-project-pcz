@@ -36,57 +36,6 @@ public class BorrowingController : Controller
     }
     
     /// <summary>
-    /// Create new entry of borrowing in database.
-    /// </summary>
-    /// <param name="createBorrowingDto">New borrowing data.</param>
-    /// <returns>
-    /// If createBorrowingDto is correct, returns "created" (201 Created) with URL to new resource (Location response header) and newly created resource itself (JSON in response body),
-    /// otherwise returns "bad request" (400 Bad Request).
-    /// </returns>
-    [HttpPost]
-    [Authorize(Roles = "reader")]
-    public IActionResult Create([FromBody] CreateBorrowingDTO? createBorrowingDto)
-    {
-        if (createBorrowingDto == null) return BadRequest();
-        try
-        {
-            createBorrowingDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var borrowingDto = _borrowingService.AddBorrowing(createBorrowingDto);
-            return Created("/api/borrowings/" + borrowingDto?.BorrowingId, borrowingDto);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(ex.Message);
-        }
-    }
-    
-    /// <summary>
-    /// Update information about chosen borrowing.
-    /// </summary>
-    /// <param name="borrowingId">Borrowing identifier used in database.</param>
-    /// <param name="updateBorrowingDto">Modified borrowing data.</param>
-    /// <returns>
-    /// If borrowingId is missing or updateBorrowingDto is incorrect, returns "bad request" (400 Bad Request),
-    /// otherwise if succeeds, returns updated borrowing information (200 OK),
-    /// otherwise returns "not found" (404 Not Found).
-    /// </returns>
-    [HttpPut("{borrowingId:int?}")]
-    public IActionResult Update(int? borrowingId, [FromBody] UpdateBorrowingDTO? updateBorrowingDto)
-    {
-        if (borrowingId == null || updateBorrowingDto == null) return BadRequest();
-        try
-        {
-            updateBorrowingDto.BorrowingId = borrowingId;
-            var borrowingDto = _borrowingService.UpdateBorrowing(updateBorrowingDto);
-            return borrowingDto == null ? NotFound() : Ok(borrowingDto);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Conflict(ex.Message);
-        }
-    }
-
-    /// <summary>
     /// Delete entry of chosen borrowing.
     /// </summary>
     /// <param name="borrowingId">Borrowing identifier used in database.</param>

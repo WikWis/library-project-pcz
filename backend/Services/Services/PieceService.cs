@@ -68,10 +68,7 @@ namespace Services.Services
 
             if (createPieceDto.TitleId <= 0)
                 throw new ArgumentException("Id tytułu musi być większe od 0.", nameof(createPieceDto.TitleId));
-
-            if (!Enum.IsDefined(typeof(PieceStatus), createPieceDto.Status))
-                throw new ArgumentException("Nieprawidłowy status egzemplarza.", nameof(createPieceDto.Status));
-
+            
             if (!Enum.IsDefined(typeof(PieceState), createPieceDto.State))
                 throw new ArgumentException("Nieprawidłowy stan egzemplarza.", nameof(createPieceDto.State));
 
@@ -103,9 +100,6 @@ namespace Services.Services
 
             if (updatePieceDto.PieceId <= 0)
                 throw new ArgumentException("Id egzemplarza musi być większe od 0.", nameof(updatePieceDto.PieceId));
-
-            if (!Enum.IsDefined(typeof(PieceStatus), updatePieceDto.Status))
-                throw new ArgumentException("Nieprawidłowy status egzemplarza.", nameof(updatePieceDto.Status));
 
             if (!Enum.IsDefined(typeof(PieceState), updatePieceDto.State))
                 throw new ArgumentException("Nieprawidłowy stan egzemplarza.", nameof(updatePieceDto.State));
