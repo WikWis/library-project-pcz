@@ -9,7 +9,7 @@ function renderPublisherCheckbox(publisherLookupDTO: PublisherLookupDTO): string
                     class="form-check-input"
                     id="publisher-${publisherLookupDTO.publisherId}"
                 />
-                <label class="form-check-label" for="author-${publisherLookupDTO.publisherId}">
+                <label class="form-check-label" for="publisher-${publisherLookupDTO.publisherId}">
                     ${publisherLookupDTO.publisherId} ${publisherLookupDTO.name}
                 </label>
             </div>

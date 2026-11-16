@@ -1,4 +1,3 @@
-// Getting query param
 import type {AuthorDTO} from "../../../dto/author/author-dto.ts";
 import {InputValidSubject} from "../../alert/input/input-valid-subject.ts";
 import {InputValidObserver} from "../../alert/input/input-valid-observer.ts";
