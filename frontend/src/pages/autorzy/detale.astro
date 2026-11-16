@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AuthorDetails from "../../components/author/AuthorDetails.astro";
 import DangerAlert from "../../components/alert/DangerAlert.astro";
+import ConfirmRemoveAlert from "../../components/alert/ConfirmRemoveAlert.astro";
 ---
 
 <BaseLayout>
@@ -30,24 +31,7 @@ import DangerAlert from "../../components/alert/DangerAlert.astro";
             </div>
         </div>
 
-        <div class="modal fade" id="confirmRemoveModal" tabindex="-1" aria-labelledby="confirmRemoveModalLabel"
-             aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="confirmRemoveModalLabel">Czy jesteś pewny?</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        Czy na pewno chcesz usunąć Autora?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Nie</button>
-                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="confirmRemoveButton" >Tak</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <ConfirmRemoveAlert message="Czy na pewno chcesz tego autora?"/>
 
     </div>
 </BaseLayout>
