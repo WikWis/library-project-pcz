@@ -17,6 +17,10 @@ const titleAuthorsDiv = document.querySelector<HTMLDivElement>("#title-authors")
 const titlePublisherDiv = document.querySelector<HTMLDivElement>("#title-publisher")
 
 const editButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#edit-button")
+const confirmRemoveButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#confirmRemoveButton")
+
+// When not created
+const errorAlert: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#title-danger-alert");
 
 const titleService: TitleServiceInterface = new TitleService();
 
@@ -35,11 +39,21 @@ export async function init() {
     const id: Number = Number.parseInt(pathId ?? "0")
     const titleDto: TitleDTO | undefined = await titleService.Details(id)
 
-    if (id === 0 || isNaN(id.valueOf()) || titleDto === undefined) {
+    if (id === 0 || isNaN(id.valueOf()) || titleDto === undefined || confirmRemoveButton === null || errorAlert === null) {
         notFoundMessageDiv!.hidden = false;
         contentDiv!.hidden = true;
         return;
     }
 
     setUpAstroElements(titleDto)
+
+    confirmRemoveButton.onclick = async () => {
+        const isSaved: Boolean = await titleService.Delete(titleDto.titleId);
+        if (!isSaved) {
+            errorAlert.classList.toggle("d-none", isSaved);
+            return;
+        }
+
+        window.location.href = "/tytul";
+    }
 }

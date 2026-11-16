@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TitleDetails from "../../components/title/TitleDetails.astro";
+import DangerAlert from "../../components/alert/DangerAlert.astro";
 ---
 
 <BaseLayout>
@@ -13,17 +14,40 @@ import TitleDetails from "../../components/title/TitleDetails.astro";
             <h1>Nie znaleziono Tytułu!</h1>
         </div>
 
-        <div id="content">
+        <DangerAlert id="title-danger-alert" message="Nie udało sie usunąć Tytułu." isHidden={true}/>
 
+        <div id="content">
             <div class="row">
                 <TitleDetails/>
             </div>
-
         </div>
 
         <div class="row ">
-            <div class="col mt-3">
-                <a id="edit-button"  class="btn btn-success" href="/tytul/edytuj?id=1">Edytuj Autora</a>
+            <div class="d-flex gap-2 mt-2">
+                <a id="edit-button" class="btn btn-success" href="/tytul/edytuj?id=1">Edytuj Autora</a>
+                <a type="button" class="btn btn-danger" data-bs-toggle="modal"
+                   data-bs-target="#confirmRemoveModal">Usuń</a>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmRemoveModal" tabindex="-1" aria-labelledby="confirmRemoveModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="confirmRemoveModalLabel">Czy jesteś pewny?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Czy na pewno chcesz usunąć Tytuł?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Nie</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="confirmRemoveButton">
+                            Tak
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
