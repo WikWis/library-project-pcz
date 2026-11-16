@@ -98,7 +98,6 @@ async function getAllPublishers(pageSize = 100): Promise<PublisherLookupDTO[]> {
 
 function fillTitleInputs(titleDto: TitleDTO): void {
     // Filling basic inputs
-    console.log("d")
     titleNameInput!.value = titleDto.name;
     titleDateOfPublishingInput!.value = titleDto.dateOfPublishing.toString().slice(0, 10);
     titleISBNInput!.value = titleDto.isbn.toString();
@@ -118,7 +117,6 @@ function fillTitleInputs(titleDto: TitleDTO): void {
     const selectedAuthors = new Set(
         titleDto.authors.map(author => author.authorId)
     );
-    console.log(selectedAuthors)
 
     const authorCheckboxes: HTMLInputElement[] = Array.from(
         document.querySelectorAll<HTMLInputElement>('input[name="authorId"]')
@@ -126,7 +124,6 @@ function fillTitleInputs(titleDto: TitleDTO): void {
 
     authorCheckboxes.forEach(checkbox => {
         checkbox.checked = selectedAuthors.has(Number.parseInt(checkbox.value));
-        console.log(checkbox)
     });
 
     // Selecting publisher

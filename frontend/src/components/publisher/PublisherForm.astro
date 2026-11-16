@@ -1,0 +1,31 @@
+---
+export interface Props {
+    buttonMessage: string
+}
+const {
+    buttonMessage
+} = Astro.props;
+---
+<div class="card shadow-sm w-100">
+
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">Formularz Wydawnictwo</h4>
+    </div>
+
+    <div class="card-body p-4">
+
+        <div class="mb-3 col-md-6">
+            <label for="publisher-name-input" class="form-label">Nazwa</label>
+            <input type="text" class="form-control" id="publisher-name-input"
+                   aria-describedby="publisher-name-feedback"
+                   required>
+            <div id="publisher-name-feedback" class="invalid-feedback">
+                Proszę wpisz nazwę wydawnictwa!
+            </div>
+        </div>
+
+        <button id="submit-publisher-button" type="submit" class="btn btn-primary">{buttonMessage}</button>
+
+    </div>
+
+</div>
