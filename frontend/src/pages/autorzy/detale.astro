@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import AuthorDetails from "../../components/author/AuthorDetails.astro";
+import DangerAlert from "../../components/alert/DangerAlert.astro";
 ---
 
 <BaseLayout>
@@ -13,17 +14,38 @@ import AuthorDetails from "../../components/author/AuthorDetails.astro";
             <h1>Nie znaleziono autora!</h1>
         </div>
 
-        <div id="content">
+        <DangerAlert id="author-danger-alert" message="Nie udało sie usunąć autora." isHidden={true}/>
 
-            <div class="row">
+        <div class="row">
+            <div id="content">
                 <AuthorDetails/>
             </div>
-
         </div>
 
-        <div class="row ">
-            <div class="col mt-3">
-                <a id="edit-button"  class="btn btn-success" href="/autorzy/edytuj?id=1">Edytuj Autora</a>
+        <div class="row">
+            <div class="d-flex gap-2 mt-2">
+                <a id="edit-button" class="btn btn-success" href="/autorzy/edytuj?id=1">Edytuj Autora</a>
+                <a type="button" class="btn btn-danger" data-bs-toggle="modal"
+                   data-bs-target="#confirmRemoveModal">Usuń</a>
+            </div>
+        </div>
+
+        <div class="modal fade" id="confirmRemoveModal" tabindex="-1" aria-labelledby="confirmRemoveModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="confirmRemoveModalLabel">Czy jesteś pewny?</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        Czy na pewno chcesz usunąć Autora?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-bs-dismiss="modal">Nie</button>
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" id="confirmRemoveButton" >Tak</button>
+                    </div>
+                </div>
             </div>
         </div>
 

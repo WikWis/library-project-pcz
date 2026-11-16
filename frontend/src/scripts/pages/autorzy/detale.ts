@@ -1,4 +1,4 @@
-import {AuthorService} from "../../../services/author-service.ts";
+import {AuthorService, type AuthorServiceInterface} from "../../../services/author-service.ts";
 import type {TitleLookupDTO} from "../../../dto/title/title-lookup-dto.ts";
 import type {AuthorDTO} from "../../../dto/author/author-dto.ts";
 import {PageSwitcher} from "../../pagination/page-switcher.ts";
@@ -25,6 +25,10 @@ const previousButton: HTMLButtonElement | null = document.querySelector<HTMLButt
 const nextButton: HTMLButtonElement | null = document.querySelector<HTMLButtonElement>("#next-button")
 
 const editButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#edit-button")
+const confirmRemoveButton: HTMLLinkElement | null = document.querySelector<HTMLLinkElement>("#confirmRemoveButton")
+
+// When not created
+const errorAlert: HTMLDivElement | null = document.querySelector<HTMLDivElement>("#author-danger-alert");
 
 function setUpAstroElements(authorDto: AuthorDTO) {
     authorIdDiv!.innerText = authorDto.authorId.toString()
@@ -35,29 +39,38 @@ function setUpAstroElements(authorDto: AuthorDTO) {
 }
 
 export async function init() {
-    if (authorTitlesList === null || previousButton === null || nextButton === null) {
+    if (authorTitlesList === null || previousButton === null || nextButton === null || errorAlert === null) {
         throw new Error("No all elements needed are present.");
     }
+    const authorService: AuthorServiceInterface = new AuthorService()
 
     const id: Number = Number.parseInt(pathId ?? "0")
     const authorDto: AuthorDTO | undefined = await new AuthorService().Details(id)
 
-    if (id === 0 || isNaN(id.valueOf()) || authorDto === undefined) {
+    if (id === 0 || isNaN(id.valueOf()) || authorDto === undefined || confirmRemoveButton === null) {
         notFoundMessageDiv!.hidden = false;
         contentDiv!.hidden = true;
         return;
     }
 
     const pageDataProvider: PageDataProviderInterface<TitleLookupDTO> = new TitleLookupPageDataProvider(authorDto.authorId)
-
     const pageRenderer: PageRendererInterface<TitleLookupDTO> = new class implements PageRendererInterface<TitleLookupDTO> {
         render(data: TitleLookupDTO[]): string {
             return renderTitlesGroupList(data);
         }
     }
-
     const pageSwitcher: PageSwitcher<TitleLookupDTO> = new PageSwitcher<TitleLookupDTO>(pageDataProvider, pageRenderer, authorTitlesList)
 
     setUpAstroElements(authorDto);
     await setupPagination(pageSwitcher, previousButton, nextButton);
+
+    confirmRemoveButton.onclick = async () => {
+        const isSaved: Boolean = await authorService.Delete(authorDto.authorId);
+        if (!isSaved) {
+            errorAlert.classList.toggle("d-none", isSaved);
+            return;
+        }
+
+        window.location.href = "/autorzy";
+    }
 }
