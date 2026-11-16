@@ -7,8 +7,21 @@ his project is being developed as part of the "Projekt zespołowy z Inżynierii 
 Developed by:
 
 - Jakub Siwek
+
 - Edyta Jarząbek
+
 - Wiktor Wiśniewski
+
+### Presentation
+
+#### All Titles Page
+![](./images/zdj-1.png)
+
+#### Author Details Page
+![](./images/zdj-2.png)
+
+#### Title Create Page
+![](./images/zdj-3.png)
 
 ### Project build
 
