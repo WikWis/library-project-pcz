@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Model;
 using services.DTOs.BorrowingDTOs;
 using Services.Interfaces;
 
@@ -10,53 +11,122 @@ namespace main.Controllers;
 [Route("/api/borrowings")]
 public class BorrowingController : Controller
 {
-    private readonly IBorrowingService _borrowingService;
+    private readonly IBorrowingService borrowingService;
+
     public BorrowingController(IBorrowingService borrowingService)
     {
-        _borrowingService = borrowingService;
+        this.borrowingService = borrowingService;
     }
-
-    /// <summary>
-    /// Get information about borrowings of chosen user. Uses pagination.
-    /// </summary>
-    /// <param name="userId">Query parameter containing user identifier used in database.</param>
-    /// <param name="page">Query parameter containing chosen page number. Defaults to 0.</param>
-    /// <param name="pageSize">Query parameter containing page size. Defaults to 20.</param>
-    /// <returns>
-    /// Unless titleId is provided, returns list of all authors (200 OK),
-    /// otherwise returns "bad request" (400 Bad Request).
-    /// </returns>
     [HttpGet]
-    public IActionResult Index([FromQuery] int page = 0, [FromQuery] int pageSize = 20, [FromQuery] string? userId = null)
+    public IActionResult Index([FromQuery] BorrowingStatus? status, [FromQuery] string? userId, [FromQuery] int page = 0, [FromQuery] int pageSize = 20)
     {
-        if(userId == null)
-            return BadRequest();
-        var borrowings = _borrowingService.GetBorrowingsByUser(page, pageSize, userId);
+        IList<BorrowingDTO> borrowings;
+        if (status != null)
+            borrowings = borrowingService.GetBorrowingsByStatus(page, pageSize, status.Value);
+        else if (userId != null)
+            borrowings = borrowingService.GetBorrowingsByUser(page, pageSize, userId);
+        else return BadRequest();
+        
         return Ok(borrowings);
     }
-    
-    /// <summary>
-    /// Delete entry of chosen borrowing.
-    /// </summary>
-    /// <param name="borrowingId">Borrowing identifier used in database.</param>
-    /// <returns>
-    /// If borrowingId is missing, returns "bad request" (400 Bad Request),
-    /// otherwise if operation is currently invalid, returns "conflict" (409 Conflict),
-    /// otherwise if succeeds, returns "no content" (204 NoContent),
-    /// otherwise returns "not found" (404 Not Found).
-    /// </returns>
-    [HttpDelete("{borrowingId:int?}")]
-    public IActionResult Delete(int? borrowingId)
+
+    [HttpPost("reserve")]
+    [Authorize(Roles = "reader")]
+    public IActionResult Reserve(CreateBorrowingDTO? createBorrowingDto)
+    {
+        if(createBorrowingDto == null) return BadRequest();
+        createBorrowingDto.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        try
+        {
+            var borrowing = borrowingService.ReserveBorrowing(createBorrowingDto);
+            return Ok(borrowing);
+        }
+        catch(InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
+    }
+
+    [HttpDelete("cancel/{borrowingId:int}")]
+    [Authorize(Roles = "reader")]
+    public IActionResult Cancel(int? borrowingId)
     {
         if (borrowingId == null) return BadRequest();
         try
         {
-            var result = _borrowingService.DeleteBorrowing((int)borrowingId);
+            bool result = borrowingService.CancelBorrowing(borrowingId.Value,
+                User.FindFirstValue(ClaimTypes.NameIdentifier)!
+                );
             return result ? NoContent() : NotFound();
         }
-        catch (InvalidOperationException ex)
+        catch(InvalidOperationException e)
         {
-            return Conflict(ex.Message);
+            return Conflict(e.Message);
+        }
+    }
+
+    [HttpPatch("confirm/{borrowingId:int}")]
+    [Authorize(Roles = "librarian")]
+    public IActionResult Confirm(int? borrowingId)
+    {
+        if(borrowingId == null) return BadRequest();
+        try
+        {
+            var borrowing = borrowingService.ConfirmBorrowing(borrowingId.Value);
+            return Ok(borrowing);
+        }
+        catch(InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
+    }
+
+    
+    [HttpPost("borrow")]
+    [Authorize(Roles = "librarian")]
+    public IActionResult Borrow(CreateBorrowingDTO? createBorrowingDto)
+    {
+        if(createBorrowingDto == null) return BadRequest();
+        try
+        {
+            var borrowing = borrowingService.CreateBorrowing(createBorrowingDto);
+            return Ok(borrowing);
+        }
+        catch(InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
+    }
+    
+    [HttpPatch("return/{borrowingId:int}")]
+    [Authorize(Roles = "librarian")]
+    public IActionResult Return(int? borrowingId)
+    {
+        if(borrowingId == null) return BadRequest();
+        try
+        {
+            var borrowing = borrowingService.ReturnBorrowing(borrowingId.Value);
+            return Ok(borrowing);
+        }
+        catch(InvalidOperationException e)
+        {
+            return Conflict(e.Message);
+        }
+    }
+
+    [HttpDelete("{borrowingId:int}")]
+    [Authorize(Roles = "librarian")]
+    public IActionResult Delete(int? borrowingId)
+    {
+        if(borrowingId == null) return BadRequest();
+        try
+        {
+            bool result = borrowingService.DeleteBorrowing(borrowingId.Value);
+            return result ? NoContent() : NotFound();
+        }
+        catch(InvalidOperationException e)
+        {
+            return Conflict(e.Message);
         }
     }
 }

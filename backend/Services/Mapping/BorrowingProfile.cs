@@ -1,9 +1,6 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Model;
 using services.DTOs.BorrowingDTOs;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Services.Mapping
 {
@@ -12,10 +9,11 @@ namespace Services.Mapping
         public BorrowingProfile()
         {
             CreateMap<Borrowing, BorrowingDTO>();
-            CreateMap<ReserveBorrowingDTO, Borrowing>()
+            CreateMap<CreateBorrowingDTO, Borrowing>()
                 .ForMember(d => d.BorrowingId, o => o.Ignore())
-                .ForMember(d=>d.User, o => o.Ignore())
-                .ForMember(d => d.Piece, o => o.Ignore());
+                .ForMember(d => d.Status, o => o.Ignore())
+                .ForMember(d => d.Piece, o => o.Ignore())
+                .ForMember(d => d.User, o => o.Ignore());
         }
     }
 }

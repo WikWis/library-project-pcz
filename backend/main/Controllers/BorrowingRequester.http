@@ -1,25 +1,46 @@
-### Zawiera zaimplementowaną paginację
-GET http://localhost:5111/api/borrowings?userId=02336e1f-644d-4013-8c51-dbc8c148abcd
+### Niepoprawne zapytanie, musi mieć status lub userId
+GET localhost:5111/api/borrowings
 
-###
-POST http://localhost:5111/api/borrowings
+### Zwraca wszystkie wypożyczenia z danym statusem, używa paginacji
+GET localhost:5111/api/borrowings?status=0
+
+### Zwraca wszystkie wypożyczenia z danym userId, używa paginacji
+GET localhost:5111/api/borrowings?userId=02336e1f-644d-4013-8c51-dbc8c148abcd
+
+### Pozwala readerowi zarezerwować dany tytuł
+POST localhost:5111/api/borrowings/reserve
+Authorization: Bearer {{readerToken}}}
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1laWRlbnRpZmllciI6IjAyMzM2ZTFmLTY0NGQtNDAxMy04YzUxLWRiYzhjMTQ4YWJjZCIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL2VtYWlsYWRkcmVzcyI6Imphbi5rb3dhbHNraUBsaWJyYXJ5LmxvY2FsIiwianRpIjoiMmVlNDIwOGItMjJmMC00MDYwLTk1YzctYTJiMjM0ZjIwOWJjIiwiaHR0cDovL3NjaGVtYXMubWljcm9zb2Z0LmNvbS93cy8yMDA4LzA2L2lkZW50aXR5L2NsYWltcy9yb2xlIjoicmVhZGVyIiwiZXhwIjoxNzk0ODM0NjkwLCJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjUxMTEiLCJhdWQiOiJodHRwOi8vbG9jYWxob3N0OjQzMjEifQ.ISqUDPbQQQYXzpbW_mpG0Zvq13EJIDoEPqgqSdK0r4k
 
 {
+  "startDate": "2027-03-01",
+  "endDate": "2027-04-01",
+  "pieceId": 1
+}
+
+### Pozwala readerowi odwołać daną rezerwowację
+DELETE localhost:5111/api/borrowings/cancel/2003
+Authorization: Bearer {{readerToken}}
+
+### Pozwala librarianowi potwierdzić wypożyczenie książki
+PATCH localhost:5111/api/borrowings/confirm/2008
+Authorization: Bearer {{librarianToken}}
+
+### Pozwala librarianowi zapisać wypożyczenie (jak ktoś wypożyczy na miejscu)
+POST localhost:5111/api/borrowings/borrow
+Authorization: Bearer {{librarianToken}}
+Content-Type: application/json
+
+{
+  "endDate": "2027-04-01",
   "pieceId": 1,
-  "startDate": "2026-11-01",
-  "endDate": "2026-12-01"
+  "userId": "02336e1f-644d-4013-8c51-dbc8c148abcd"
 }
 
-###
-PUT http://localhost:5111/api/borrowings/1
-Content-Type: application/json
+### Pozwala librarianowi potwierdzić zwrot książki
+PATCH localhost:5111/api/borrowings/return/2010
+Authorization: Bearer {{librarianToken}}
 
-{
-  "startDate": "2026-11-11",
-  "endDate": "2026-12-11"
-}
-
-###
-DELETE http://localhost:5111/api/authors/1
+### Pozwala librarianowi skasować informację o wypożyczeniu, tylko gdy została już zwrócona, lub gdy została tylko zarezerwowana
+DELETE localhost:5111/api/borrowings/2009
+Authorization: Bearer {{librarianToken}}

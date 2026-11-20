@@ -8,17 +8,16 @@ namespace Model
     {
         Reserved,
         Borrowed,
-        InRepair,
-        Cancelled,
-        Archived,
+        //Cancelled, USUWAJ ZAMIAST
         Returned
     }
+    //EndDate nie wpływa na możliwość rezerwacji
     public class Borrowing
     {
         public int BorrowingId { get; set; }
 
         public DateOnly StartDate { get; set; }
-        public DateOnly? EndDate { get; set; }
+        public DateOnly EndDate { get; set; }
         public BorrowingStatus Status { get; set; }
         public string UserId { get; set; } = string.Empty;
         public virtual User? User { get; set; }

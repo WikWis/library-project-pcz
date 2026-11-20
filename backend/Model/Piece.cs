@@ -8,7 +8,8 @@ namespace Model
     {
         Good,
         Damaged,
-        Unusable
+        Archived,
+        //InRepair
     }
 
     public class Piece
